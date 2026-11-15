@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="sr-Latn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#111317" />
+  <title>Car Detailing — preuzimanje</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" />
+
+  <!-- .github/pages/build.sh fills in the double-underscore placeholders
+       (download link, version, date), generates qr.svg and copies logo.png
+       from assets/icon. -->
+  <style>
+    /* "Keramika": a ceramic-coated dark surface with a pearl sheen. Every
+       text color keeps at least 4.5:1 against the surface it sits on. */
+    :root {
+      --bg: #111317;
+      --card: #1A1D23;
+      --border: rgba(255, 255, 255, 0.07);
+      --text: #EDEFF3;
+      --muted: #A0A7B4;
+      --accent-text: #B9AEFF;
+      --on-pearl: #0E1014;
+      --pearl: linear-gradient(120deg, #A795FF 0%, #79DCEB 55%, #BDF6DC 100%);
+      --rule: #79DCEB;
+      --heading: "Space Grotesk", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .header {
+      position: relative;
+      padding: 32px 24px 26px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header > :not(.beads) { position: relative; }
+
+    .header img {
+      display: block;
+      margin: 0 auto;
+      width: 88px;
+      height: 88px;
+      border-radius: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .wordmark {
+      display: inline-block;
+      margin: 14px 0 6px;
+      padding-bottom: 0.06em;
+      font-family: var(--heading);
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--accent-text);
+    }
+
+    @supports ((background-clip: text) or (-webkit-background-clip: text)) {
+      .wordmark {
+        background: var(--pearl);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+    }
+
+    .header p {
+      margin: 0 auto;
+      max-width: 32ch;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    /* Water beads on the coating: a highlight up top, light gathered at
+       the bottom, a shadow underneath. Decoration only. */
+    .beads { position: absolute; inset: 0; pointer-events: none; }
+
+    .bead {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      width: var(--s);
+      height: var(--s);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.9) 0 7%, rgba(255, 255, 255, 0) 22%),
+        radial-gradient(circle at 60% 74%, rgba(189, 246, 220, 0.32) 0 12%, rgba(189, 246, 220, 0) 40%),
+        radial-gradient(circle at 50% 45%, rgba(237, 239, 243, 0.04) 0 52%, rgba(237, 239, 243, 0.17) 100%);
+      box-shadow:
+        0 2px 5px rgba(0, 0, 0, 0.55),
+        inset 0 -1px 2px rgba(121, 220, 235, 0.25);
+    }
+
+    .body { padding: 24px; text-align: center; }
+
+    .meta {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .chip {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 12px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      color: var(--on-pearl);
+      background: var(--pearl);
+      text-decoration: none;
+      font-family: var(--heading);
+      font-size: 17px;
+      font-weight: 700;
+      padding: 16px;
+      border: 0;
+      border-radius: 12px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .btn svg { width: 20px; height: 20px; flex: none; }
+
+    .btn:hover { opacity: 0.92; transform: translateY(-1px); }
+
+    .btn.share {
+      margin-top: 10px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent-text);
+      background: transparent;
+      border: 1px solid rgba(185, 174, 255, 0.45);
+      cursor: pointer;
+    }
+
+    .btn.share svg { width: 18px; height: 18px; }
+
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid var(--accent-text);
+      outline-offset: 3px;
+    }
+
+    .qr {
+      margin: 24px auto 8px;
+      width: 200px;
+      height: 200px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .qr img { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+
+    .hint { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+
+    .note {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--rule);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .note strong { color: var(--text); font-weight: 600; }
+
+    .note code {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.92em;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+
+    .footer { margin-top: 18px; font-size: 11px; color: var(--muted); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn { transition: none; }
+      .btn:hover { transform: none; }
+    }
+
+    /* Laptops and desktops: the card becomes the whole screen, split in two,
+       and nothing scrolls. Sizes follow the window height so it all fits.
+       Phones keep the layout above. */
+    @media (min-width: 900px) {
+      html, body { height: 100%; overflow: hidden; }
+      body { padding: 0; }
+
+      .card {
+        max-width: none;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 5vh 4vw;
+        background: var(--bg);
+        border-bottom: 0;
+        border-right: 1px solid var(--border);
+      }
+      .header img {
+        width: clamp(96px, 20vh, 168px);
+        height: clamp(96px, 20vh, 168px);
+        border-radius: 24%;
+      }
+      .wordmark { margin: 3vh 0 1.2vh; font-size: clamp(30px, 6.5vh, 56px); }
+      .header p { font-size: clamp(15px, 2.4vh, 20px); }
+
+      .bead {
+        left: var(--dx);
+        top: var(--dy);
+        width: var(--ds);
+        height: var(--ds);
+      }
+
+      .body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4vh 4vw;
+      }
+      .body > * { width: 100%; max-width: 420px; }
+      .meta { margin-bottom: 2.5vh; }
+      .qr {
+        width: clamp(130px, 27vh, 240px);
+        height: clamp(130px, 27vh, 240px);
+        margin: 3vh auto 1vh;
+      }
+      .note { margin-top: 2.5vh; }
+      .footer { margin-top: 2vh; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="header">
+      <div class="beads" aria-hidden="true">
+        <span class="bead" style="--x:26px; --y:28px; --s:16px; --dx:14%; --dy:15%; --ds:26px"></span>
+        <span class="bead" style="--x:60px; --y:60px; --s:8px; --dx:24%; --dy:24%; --ds:12px"></span>
+        <span class="bead" style="--x:22px; --y:96px; --s:11px; --dx:10%; --dy:76%; --ds:18px"></span>
+        <span class="bead" style="--x:calc(100% - 58px); --y:30px; --s:22px; --dx:80%; --dy:12%; --ds:34px"></span>
+        <span class="bead" style="--x:calc(100% - 34px); --y:80px; --s:9px; --dx:74%; --dy:84%; --ds:14px"></span>
+      </div>
+      <img src="logo.png" alt="Car Detailing logo" />
+      <h1 class="wordmark">Car Detailing</h1>
+      <p>Kalendar termina, novčanik i zarada za ekipu koja radi dubinsko pranje i detailing.</p>
+    </div>
+
+    <div class="body">
+      <div class="meta">
+        <span class="chip">v__VERSION__</span>
+        <span class="chip">__DATE__</span>
+      </div>
+
+      <a class="btn" href="__DOWNLOAD_URL__" download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>
+        Preuzmi za Android
+      </a>
+      <button class="btn share" id="share" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+        <span class="label">Podeli</span>
+      </button>
+
+      <div class="qr">
+        <img src="qr.svg" alt="QR kod za preuzimanje aplikacije" />
+      </div>
+
+      <p class="hint">Skeniraj QR kod telefonom da preuzmeš APK</p>
+
+      <div class="note">
+        <strong>Instalacija:</strong>
+        otvori preuzeti <code>.apk</code> na telefonu i dozvoli instalaciju iz
+        nepoznatih izvora ako telefon pita. Pri prvom pokretanju dozvoli
+        obaveštenja: preko njih stižu novi i promenjeni termini, podsetnici
+        za sutrašnji posao i nove verzije.
+      </div>
+
+      <div class="footer">Car Detailing · automatski build</div>
+    </div>
+  </main>
+
+  <script>
+    // Shares this page rather than the APK link: the page has the QR code and
+    // the install steps. Browsers without a share sheet (most desktop ones)
+    // copy the link instead.
+    const shareBtn = document.getElementById('share');
+    const shareLabel = shareBtn.querySelector('.label');
+    const shareText = shareLabel.textContent;
+    shareBtn.addEventListener('click', async () => {
+      const url = location.origin + location.pathname;
+      if (navigator.share) {
+        try { await navigator.share({ title: document.title, url }); } catch (_) {}
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        shareLabel.textContent = 'Link kopiran';
+        setTimeout(() => { shareLabel.textContent = shareText; }, 2000);
+      } catch (_) {
+        prompt('Kopiraj link:', url);
+      }
+    });
+  </script>
+</body>
+</html>

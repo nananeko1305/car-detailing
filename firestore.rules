@@ -1,0 +1,235 @@
+rules_version = '2';
+// The only boundary between the app and the data: the app talks to Firestore
+// directly. Tested on the emulator in rules_test/. The push worker uses a
+// service account, which skips these rules; it repeats the checks it needs.
+//
+// Every timestamp the app writes (createdAt, updatedAt, doneAt) is the
+// server's: FieldValue.serverTimestamp().
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function userPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+    function adminMarker() {
+      return /databases/$(database)/documents/meta/admin;
+    }
+    function me() {
+      return get(userPath(request.auth.uid)).data;
+    }
+    // Signed in, added by the admin (or the admin), and not disabled.
+    function isActive() {
+      return signedIn()
+        && exists(userPath(request.auth.uid))
+        && me().get('disabled', false) != true;
+    }
+    function isAdmin() {
+      return isActive() && me().role == 'admin';
+    }
+    function data() {
+      return request.resource.data;
+    }
+    function affected() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+    function shortText(v, max) {
+      return v is string && v.size() <= max;
+    }
+    // Para, as an integer; a ceiling of 100 million dinars.
+    function validMoney(v) {
+      return v is int && v >= 0 && v <= 10000000000;
+    }
+    function exactKeys(d, keys) {
+      return d.keys().hasOnly(keys) && d.keys().hasAll(keys);
+    }
+
+    // Written once, by the first account to claim it, in the same batch as
+    // its own users/{uid} with role 'admin'; never changes. Readable when
+    // signed in, so a new account can tell whether the claim is still open.
+    match /meta/admin {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && exactKeys(data(), ['uid'])
+        && data().uid == request.auth.uid
+        && getAfter(userPath(request.auth.uid)).data.role == 'admin';
+    }
+
+    function profileKeys() {
+      return ['email', 'firstName', 'lastName', 'phone', 'role', 'disabled', 'createdAt'];
+    }
+    function validDetails(d) {
+      return shortText(d.get('firstName', ''), 50)
+        && shortText(d.get('lastName', ''), 50)
+        && shortText(d.get('phone', ''), 40);
+    }
+
+    match /users/{uid} {
+      // Your own profile always (the app needs it to show the claim or the
+      // disabled screen); everyone's while active.
+      allow read: if (signedIn() && request.auth.uid == uid) || isActive();
+
+      // The admin adds a worker; or the one-time admin claim, in the same
+      // batch as meta/admin.
+      allow create: if exactKeys(data(), profileKeys())
+        && shortText(data().email, 200)
+        && validDetails(data())
+        && data().disabled == false
+        && data().createdAt == request.time
+        && (
+          (isAdmin() && data().role == 'worker')
+          || (signedIn() && request.auth.uid == uid
+              && data().role == 'admin'
+              && !exists(adminMarker())
+              && existsAfter(adminMarker()))
+        );
+
+      allow update: if isActive() && validDetails(data()) && (
+        // Anyone: their own name and phone.
+        (request.auth.uid == uid
+          && affected().hasOnly(['firstName', 'lastName', 'phone']))
+        // The admin: someone else's name and phone, disabling and enabling.
+        // Never a role or an email, never disabling themself.
+        || (isAdmin() && uid != request.auth.uid
+          && affected().hasOnly(['firstName', 'lastName', 'phone', 'disabled'])
+          && data().disabled is bool)
+      );
+    }
+
+    // Which account each phone belongs to; read only by the push worker.
+    match /pushTokens/{token} {
+      allow create, update: if isActive()
+        && token.size() <= 512
+        && exactKeys(data(), ['uid'])
+        && data().uid == request.auth.uid;
+      // Signing out works even when disabled.
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // What the app writes for a job. The worker's own fields (pushRev,
+    // pushStatus) are never the app's to set.
+    function requiredJobKeys() {
+      return ['ownerId', 'date', 'start', 'end', 'clientName', 'clientPhone',
+        'address', 'items', 'subtotalMinor', 'discountPercent', 'travelMinor',
+        'priceMinor', 'workers', 'notes', 'status', 'rev', 'updatedBy',
+        'createdAt', 'updatedAt'];
+    }
+    // Filled in when a job is done; a booked job may leave them out.
+    function jobKeys() {
+      return requiredJobKeys().concat(['paidMinor', 'toWallet', 'doneBy', 'doneAt']);
+    }
+    function validJob(d) {
+      return d.date is string && d.date.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && d.start is string && d.start.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+        && d.end is string && (d.end == '' || d.end.matches('([01][0-9]|2[0-3]):[0-5][0-9]'))
+        && shortText(d.clientName, 120) && shortText(d.clientPhone, 40)
+        && shortText(d.address, 200) && shortText(d.notes, 2000)
+        && d.items is list && d.items.size() <= 60
+        && d.workers is list && d.workers.size() <= 20
+        && validMoney(d.subtotalMinor)
+        && d.discountPercent is int && d.discountPercent >= 0 && d.discountPercent <= 100
+        && validMoney(d.travelMinor) && validMoney(d.priceMinor)
+        && d.status in ['booked', 'done', 'cancelled']
+        && (d.get('paidMinor', null) == null || validMoney(d.get('paidMinor', null)))
+        && (d.status != 'done' || validMoney(d.get('paidMinor', null)))
+        && d.get('toWallet', false) is bool
+        && shortText(d.get('doneBy', ''), 128)
+        && (d.get('doneAt', null) == null || d.get('doneAt', null) is timestamp)
+        && d.rev is int
+        && d.updatedBy == request.auth.uid
+        && d.updatedAt == request.time;
+    }
+
+    match /jobs/{id} {
+      allow read: if isActive();
+
+      // Anyone active books a job, as themselves; a job done on the spot may
+      // be entered as done.
+      allow create: if isActive()
+        && data().keys().hasOnly(jobKeys())
+        && data().keys().hasAll(requiredJobKeys())
+        && validJob(data())
+        && data().ownerId == request.auth.uid
+        && data().status in ['booked', 'done']
+        && data().rev == 1
+        && data().createdAt == request.time;
+
+      // Anyone active edits, finishes or cancels any job. `rev` counts up by
+      // exactly one, which is what makes the worker tell the crew.
+      allow update: if isActive()
+        && data().keys().hasOnly(jobKeys().concat(['pushRev', 'pushStatus']))
+        && validJob(data())
+        && !affected().hasAny(['ownerId', 'createdAt', 'pushRev', 'pushStatus'])
+        && data().rev == resource.data.get('rev', 1) + 1;
+
+      // A job entered by mistake: its author, or the admin.
+      allow delete: if isActive()
+        && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    function entryKeys() {
+      return ['type', 'amountMinor', 'description', 'date', 'userId', 'createdBy', 'updatedAt'];
+    }
+    function validEntry(d) {
+      return exactKeys(d, entryKeys())
+        && d.type in ['deposit', 'withdrawal']
+        && validMoney(d.amountMinor) && d.amountMinor > 0
+        && shortText(d.description, 500)
+        && d.date is timestamp
+        && d.userId is string && d.userId.size() > 0 && d.userId.size() <= 128
+        && exists(userPath(d.userId))
+        && d.updatedAt == request.time;
+    }
+
+    // The crew's shared wallet: anyone active adds; only the author or the
+    // admin changes or deletes, and nobody reassigns the author.
+    match /walletEntries/{id} {
+      allow read: if isActive();
+      allow create: if isActive()
+        && validEntry(data())
+        && data().createdBy == request.auth.uid;
+      allow update: if isActive()
+        && (resource.data.createdBy == request.auth.uid || isAdmin())
+        && validEntry(data())
+        && data().createdBy == resource.data.createdBy;
+      allow delete: if isActive()
+        && (resource.data.createdBy == request.auth.uid || isAdmin());
+    }
+
+    // The price list: the admin writes it, everyone active reads it. Nothing
+    // is deleted, only archived, so old jobs keep their references.
+    match /priceCategories/{id} {
+      allow read: if isActive();
+      allow create, update: if isAdmin()
+        && exactKeys(data(), ['name', 'note', 'order', 'archived'])
+        && shortText(data().name, 100) && data().name.size() > 0
+        && shortText(data().note, 500)
+        && data().order is int
+        && data().archived is bool;
+    }
+
+    match /priceItems/{id} {
+      allow read: if isActive();
+      allow create, update: if isAdmin()
+        && exactKeys(data(), ['categoryId', 'name', 'priceMinor', 'order', 'archived'])
+        && shortText(data().categoryId, 128) && data().categoryId.size() > 0
+        && shortText(data().name, 100) && data().name.size() > 0
+        && validMoney(data().priceMinor)
+        && data().order is int
+        && data().archived is bool;
+    }
+
+    // Discount steps ({overMinor, percent}) and travel pricing.
+    match /meta/pricing {
+      allow read: if isActive();
+      allow create, update: if isAdmin()
+        && exactKeys(data(), ['discounts', 'freeTravelFromMinor', 'travelMinor'])
+        && data().discounts is list && data().discounts.size() <= 20
+        && validMoney(data().freeTravelFromMinor)
+        && validMoney(data().travelMinor);
+    }
+
+    // meta/reminder and anything else: the worker only.
+  }
+}
