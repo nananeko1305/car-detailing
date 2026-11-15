@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/locale_controller.dart';
 import '../models/app_user.dart';
-import '../services/auth_service.dart';
 import '../services/live_data.dart';
 import '../services/notification_settings.dart';
 import '../theme/app_colors.dart';
@@ -12,8 +11,8 @@ import '../widgets/update_tiles.dart';
 import '../widgets/worker_dialog.dart';
 import 'share_app_screen.dart';
 
-/// The account's own things: name, password, language, notifications,
-/// updates, and signing out.
+/// The account's own things: name, password, language, notifications and
+/// updates. Signing out is at the bottom of the side menu.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.data, required this.profile});
 
@@ -98,16 +97,6 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-              gap,
-              OutlinedButton.icon(
-                icon: const Icon(Icons.logout_rounded),
-                label: Text(t.signOut),
-                onPressed: () async {
-                  final navigator = Navigator.of(context);
-                  await AuthService.instance.signOut();
-                  navigator.popUntil((r) => r.isFirst);
-                },
               ),
             ],
           );
