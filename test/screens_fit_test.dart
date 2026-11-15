@@ -7,6 +7,7 @@ import 'package:car_detailing/screens/price_list_screen.dart';
 import 'package:car_detailing/screens/wallet_tab.dart';
 import 'package:car_detailing/screens/welcome_screen.dart';
 import 'package:car_detailing/screens/workers_screen.dart';
+import 'package:car_detailing/widgets/app_drawer.dart';
 import 'package:car_detailing/models/day_key.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -147,6 +148,30 @@ void main() {
         tester,
         WorkersScreen(data: fakeData(), profile: admin),
         scaffold: false,
+      );
+    });
+
+    testWidgets('side menu fits 360 px, sign-out last ($lang)', (tester) async {
+      final key = GlobalKey<ScaffoldState>();
+      await fits(
+        tester,
+        Scaffold(
+          key: key,
+          drawer: AppDrawer(data: fakeData(), profile: worker),
+          body: const SizedBox(),
+        ),
+        scaffold: false,
+      );
+      key.currentState!.openDrawer();
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      final signOut = find.text(sr ? 'Odjavi se' : 'Sign out');
+      final share = find.text(sr ? 'Podeli aplikaciju' : 'Share the app');
+      expect(signOut, findsOneWidget);
+      // At the bottom of the menu, below everything else.
+      expect(
+        tester.getTopLeft(signOut).dy,
+        greaterThan(tester.getTopLeft(share).dy + 200),
       );
     });
 
