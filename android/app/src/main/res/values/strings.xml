@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Push titles, looked up by name (title_loc_key) so each phone shows its own
+     language. The same words as the push* strings in lib/l10n. -->
+<resources>
+    <string name="update_notification_title">New version ready</string>
+    <string name="update_notification_body">Version %1$s is ready. Tap to download.</string>
+    <string name="job_new_title">New booking</string>
+    <string name="job_changed_title">Booking changed</string>
+    <string name="job_cancelled_title">Booking cancelled</string>
+    <string name="job_tomorrow_title">Tomorrow</string>
+    <string name="channel_jobs">Bookings</string>
+    <string name="channel_reminders">Evening reminder</string>
+    <string name="channel_updates">New versions</string>
+</resources>

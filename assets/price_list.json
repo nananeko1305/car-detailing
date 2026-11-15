@@ -1,0 +1,72 @@
+{
+  "categories": [
+    {
+      "name": "Nameštaj od štofa i mebla",
+      "note": "",
+      "items": [
+        { "name": "Ugaona garnitura (po sednom mestu)", "price": 650 },
+        { "name": "Trosed", "price": 2000 },
+        { "name": "Trosed na razvlačenje", "price": 2400 },
+        { "name": "Dvosed", "price": 1600 },
+        { "name": "Dvosed na razvlačenje", "price": 1900 },
+        { "name": "Fotelja", "price": 1100 },
+        { "name": "Fotelja velika / relaks", "price": 1400 },
+        { "name": "Tabure mali", "price": 400 },
+        { "name": "Tabure veliki", "price": 700 },
+        { "name": "Stolica (samo sedište)", "price": 350 },
+        { "name": "Stolica (sedište i naslon)", "price": 500 },
+        { "name": "Jastuk mali", "price": 200 },
+        { "name": "Jastuk veliki", "price": 350 },
+        { "name": "Tapacirani bračni krevet", "price": 2500 }
+      ]
+    },
+    {
+      "name": "Kožni nameštaj (čišćenje i nega)",
+      "note": "",
+      "items": [
+        { "name": "Kožna fotelja", "price": 1500 },
+        { "name": "Kožni dvosed", "price": 2400 },
+        { "name": "Kožni trosed", "price": 3200 },
+        { "name": "Kožna ugaona garnitura (po sednom mestu)", "price": 1000 }
+      ]
+    },
+    {
+      "name": "Dušeci",
+      "note": "",
+      "items": [
+        { "name": "Singl dušek jednostrano", "price": 1100 },
+        { "name": "Singl dušek obostrano", "price": 1600 },
+        { "name": "Bračni dušek jednostrano", "price": 1500 },
+        { "name": "Bračni dušek obostrano", "price": 2200 },
+        { "name": "Bebi dušek obostrano", "price": 1200 }
+      ]
+    },
+    {
+      "name": "Dubinsko pranje automobila – Standard",
+      "note": "Sedišta, pod i gepek.\nMali: Clio, Polo, Fiesta, Corsa · Srednji: Golf, Astra, Octavia, Focus · Veliki: Passat, Audi A4/A6, BMW 3/5, karavani · SUV / 7 sedišta: džipovi, monovolumeni",
+      "items": [
+        { "name": "Standard – Mali", "price": 5500 },
+        { "name": "Standard – Srednji", "price": 6500 },
+        { "name": "Standard – Veliki", "price": 7500 },
+        { "name": "Standard – SUV / 7 sedišta", "price": 9000 }
+      ]
+    },
+    {
+      "name": "Premium detailing",
+      "note": "Standard + tapacirung vrata, detaljno čišćenje plastike, ventilacija, šina i pukotina četkicama, stakla iznutra.\nMali: Clio, Polo, Fiesta, Corsa · Srednji: Golf, Astra, Octavia, Focus · Veliki: Passat, Audi A4/A6, BMW 3/5, karavani · SUV / 7 sedišta: džipovi, monovolumeni",
+      "items": [
+        { "name": "Premium – Mali", "price": 8000 },
+        { "name": "Premium – Srednji", "price": 9500 },
+        { "name": "Premium – Veliki", "price": 10800 },
+        { "name": "Premium – SUV / 7 sedišta", "price": 12000 }
+      ]
+    }
+  ],
+  "terms": {
+    "discounts": [
+      { "over": 6000, "percent": 10 },
+      { "over": 10000, "percent": 15 }
+    ],
+    "freeTravelFrom": 2500
+  }
+}

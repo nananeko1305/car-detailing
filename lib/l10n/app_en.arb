@@ -1,0 +1,429 @@
+{
+  "@@locale": "en",
+  "add": "Add",
+  "addFromPriceList": "Add from the price list",
+  "addItemOrNote": "Add an item from the price list, or a note.",
+  "addWorker": "Add worker",
+  "address": "Address (optional)",
+  "agreedPrice": "Agreed price",
+  "alreadyDone": "Already done",
+  "alreadyDoneHint": "A client who came without booking",
+  "amount": "Amount",
+  "appTagline": "Bookings, wallet and earnings for the whole crew.",
+  "appTitle": "Car Detailing",
+  "appVersion": "Version {version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "archive": "Put away",
+  "archiveBody": "It is no longer offered for new jobs. Jobs that have it keep it.",
+  "archiveCategoryQ": "Put away “{name}”?",
+  "@archiveCategoryQ": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "archiveItemQ": "Put away “{name}”?",
+  "@archiveItemQ": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "availableInWallet": "In the wallet: {amount}",
+  "@availableInWallet": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "backToPriceList": "Back to the price list",
+  "bookedBy": "Booked by {name}",
+  "@bookedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "byCategory": "By category",
+  "byMonth": "By month",
+  "byPriceList": "By the price list",
+  "byWorker": "By worker",
+  "call": "Call",
+  "cancel": "Cancel",
+  "cancelJob": "Cancel booking",
+  "cancelJobBody": "It stays in the history, crossed out, and everyone is told.",
+  "cancelJobTitle": "Cancel this booking?",
+  "cancelledCount": "{count, plural, one{{count} cancelled} other{{count} cancelled}}",
+  "@cancelledCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "categoryName": "Category name",
+  "categoryNote": "Note (optional)",
+  "categoryNoteHint": "What is included, which cars count as which size",
+  "changePassword": "Change password",
+  "chargeTravel": "Charge for travel",
+  "charged": "Charged",
+  "checkUpdates": "Check for updates",
+  "chooseLanguage": "Language",
+  "claimAdminBody": "This is the first account. Enter your name and become the admin: you add the workers and keep the price list.",
+  "claimAdminButton": "Become the admin",
+  "claimAdminTitle": "Become the admin",
+  "clear": "Clear",
+  "clientName": "Client (optional)",
+  "clientPhone": "Client's phone (optional)",
+  "confirmPassword": "Confirm new password",
+  "copyLink": "Copy link",
+  "costs": "Costs",
+  "currentPassword": "Current password",
+  "date": "Date",
+  "delete": "Delete",
+  "deleteEntryQ": "Delete this entry?",
+  "deleteJobBody": "Only for a job entered by mistake. Nobody is told. To call it off, cancel it instead.",
+  "deleteJobTitle": "Delete this job?",
+  "deposit": "Deposit",
+  "depositNote": "Note (optional)",
+  "depositNoteHint": "Change for the till, a loan…",
+  "depositsNote": "Put in by hand: {amount}",
+  "@depositsNote": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "disable": "Switch off",
+  "disableWorkerBody": "They can no longer sign in. Their jobs keep their name.",
+  "disableWorkerQ": "Switch off {name}?",
+  "@disableWorkerQ": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "disabledBody": "The admin has switched this account off. Ask them if it is a mistake.",
+  "disabledTitle": "Account switched off",
+  "discount": "Discount",
+  "discountPercent": "Discount {percent}%",
+  "@discountPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "discountRule": "{percent}% off above {amount}",
+  "@discountRule": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "done": "Done",
+  "doneWithTotal": "Done · {total}",
+  "@doneWithTotal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "download": "Download",
+  "earned": "Earned",
+  "edit": "Edit",
+  "editCategory": "Edit category",
+  "editEntry": "Edit entry",
+  "editItem": "Edit item",
+  "editJob": "Edit booking",
+  "editWorker": "Edit",
+  "email": "Email",
+  "enable": "Switch on",
+  "enableWorkerQ": "Switch {name} back on?",
+  "@enableWorkerQ": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "endTime": "End",
+  "errEmailInUse": "An account with this email already exists.",
+  "errGeneric": "Something went wrong. Please try again.",
+  "errInvalidEmail": "The email is not valid.",
+  "errNoNetwork": "No internet connection.",
+  "errPermission": "You don't have permission for this.",
+  "errRecentLogin": "Sign out, sign in again and try once more.",
+  "errTooMany": "Too many attempts. Try again in a few minutes.",
+  "errUserDisabled": "This account is switched off.",
+  "errWeakPassword": "Password is too weak (min. 6 characters).",
+  "errWrongCredentials": "Wrong email or password.",
+  "finishJob": "Finish job",
+  "finishedBy": "Finished by {name}",
+  "@finishedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "finishedJobs": "Finished jobs",
+  "firstName": "First name",
+  "forgotPassword": "Forgot password?",
+  "freeTravelFrom": "Free travel from",
+  "freeTravelRule": "Free travel for orders from {amount}",
+  "@freeTravelRule": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "goBack": "Back",
+  "history": "History",
+  "inWallet": "In the wallet",
+  "intoWallet": "Into the wallet",
+  "intoWalletHint": "The money was handed in as cash",
+  "invalidAmount": "Enter an amount",
+  "invalidEmail": "Enter a valid email",
+  "invalidPercent": "0 to 100",
+  "itemName": "Name",
+  "itemsCount": "{count, plural, one{{count} item} other{{count} items}}",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "job": "Job",
+  "jobGone": "This job no longer exists.",
+  "jobNoItems": "No items",
+  "jobsAndAverage": "{count, plural, =0{No jobs} one{{count} job · {average} average} other{{count} jobs · {average} average}}",
+  "@jobsAndAverage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "average": {
+        "type": "String"
+      }
+    }
+  },
+  "jobsCount": "{count, plural, =0{No jobs} one{{count} job} other{{count} jobs}}",
+  "@jobsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "language": "Language",
+  "languagePhone": "Phone language",
+  "lastName": "Last name (optional)",
+  "later": "Later",
+  "left": "Left",
+  "less": "Fewer",
+  "licenses": "Licenses",
+  "linkCopied": "Link copied.",
+  "loadPriceList": "Load the price list",
+  "loginSubtitle": "Use the account your admin made for you.",
+  "minChars6": "At least 6 characters",
+  "month": "Month",
+  "more": "More",
+  "newCategory": "New category",
+  "newDeposit": "Put money in",
+  "newItem": "New item",
+  "newJob": "New booking",
+  "newPassword": "New password",
+  "newSpending": "Spend money",
+  "newVersionBody": "Version {version} is ready to download. You have {current}.",
+  "@newVersionBody": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "current": {
+        "type": "String"
+      }
+    }
+  },
+  "newVersionTitle": "New version available",
+  "next": "Next",
+  "nextMonth": "Next month",
+  "nextYear": "Next year",
+  "noAccessBody": "Ask the admin to add you.",
+  "noAccessTitle": "No access",
+  "noJobsThatDay": "Nothing booked for this day.",
+  "noJobsThisMonth": "No finished jobs in {month}.",
+  "@noJobsThisMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "noJobsThisYear": "No finished jobs this year.",
+  "nobodyAssigned": "Nobody assigned",
+  "notEnoughBody": "Only {amount} can be spent. Put money in first, or spend less.",
+  "@notEnoughBody": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "notEnoughTitle": "Not enough in the wallet",
+  "notFinished": "{count, plural, one{Not finished · {count}} other{Not finished · {count}}}",
+  "@notFinished": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notIntoWallet": "Not in the wallet",
+  "notes": "Notes (optional)",
+  "notesHint": "Which car, floor, intercom…",
+  "notifications": "Notifications",
+  "notificationsHint": "Choose which ones you get",
+  "ok": "OK",
+  "open": "Open",
+  "over": "Above",
+  "password": "Password",
+  "passwordChanged": "Password changed.",
+  "passwordsNoMatch": "Passwords do not match",
+  "phone": "Phone (optional)",
+  "pickStartTime": "Pick the start time.",
+  "pickedCount": "{count} chosen",
+  "@pickedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "previousMonth": "Previous month",
+  "previousYear": "Previous year",
+  "price": "Price",
+  "priceList": "Price list",
+  "priceListAdminHint": "Tap an item to change it, hold it to put it away. Tap the terms to change them.",
+  "priceListEmpty": "The price list is empty. The admin sets it up.",
+  "priceListEmptyAdmin": "The price list is empty. Load the crew's list in one tap, then change what you like.",
+  "priceTypedOver": "Typed by hand, not from the price list",
+  "profile": "Profile",
+  "pushJobCancelled": "Booking cancelled",
+  "pushJobChanged": "Booking changed",
+  "pushJobNew": "New booking",
+  "pushJobTomorrow": "Tomorrow",
+  "putIn": "Put in",
+  "readOnlyNotice": "Entered by {name}. Only they or the admin can change it.",
+  "@readOnlyNotice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removedCategory": "Removed category",
+  "reopen": "Back to booked",
+  "reopenCancelledBody": "The booking is on again.",
+  "reopenDoneBody": "What was charged leaves the wallet and the earnings.",
+  "reopenTitle": "Back to booked?",
+  "required": "Required",
+  "resetSent": "Password reset email sent.",
+  "review": "Review",
+  "reviewHint": "Change a quantity here, or go back to the price list for more.",
+  "reviewWithTotal": "{count, plural, one{Review · {count} item · {total}} other{Review · {count} items · {total}}}",
+  "@reviewWithTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "roleAdmin": "Admin",
+  "roleWorker": "Worker",
+  "save": "Save",
+  "sendLink": "Send",
+  "settings": "Settings",
+  "shareApp": "Share the app",
+  "shareAppHint": "Scan the code with another phone's camera, or send the link. Android will ask to allow installing from that source.",
+  "shareAppMessage": "Car Detailing: bookings, wallet and earnings of the crew.",
+  "signIn": "Sign in",
+  "signOut": "Sign out",
+  "spend": "Spend",
+  "spending": "Spending",
+  "spentOn": "What for",
+  "spentOnHint": "Chemicals, cloths, fuel…",
+  "startPassword": "Starting password",
+  "startPasswordHint": "Tell it to the worker; they can change it in Settings.",
+  "startTime": "Start",
+  "statusBooked": "Booked",
+  "statusCancelled": "Cancelled",
+  "statusDone": "Done",
+  "statusOverdue": "Not finished",
+  "subtotal": "Subtotal",
+  "switchedOff": "Switched off",
+  "synced": "Synced",
+  "syncing": "Syncing…",
+  "tabCalendar": "Calendar",
+  "tabEarnings": "Earnings",
+  "tabWallet": "Wallet",
+  "terms": "Terms",
+  "travel": "Travel",
+  "travelFee": "Travel fee below that",
+  "travelFeeHint": "0 = always free",
+  "travelFeeRule": "Travel below that: {amount}",
+  "@travelFeeRule": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "tryAgain": "Try again",
+  "untilTime": "until {time}",
+  "@untilTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "upToDate": "You have the latest version.",
+  "updateCheckFailed": "Couldn't check for updates.",
+  "usePriceListPrice": "Use the price-list price",
+  "wait": "Please wait…",
+  "walletEmpty": "Nothing yet. Finished jobs come in here by themselves.",
+  "wentIntoWallet": "Went into the wallet",
+  "whatIsDone": "What is done",
+  "whoDeposited": "Who put it in",
+  "whoSpent": "Who spent it",
+  "whoWorked": "Who did the work",
+  "whoWorks": "Who works on it",
+  "withoutPriceList": "Not from the price list",
+  "workerAdded": "Worker added. Give them the email and the starting password.",
+  "workers": "Workers",
+  "year": "Year"
+}

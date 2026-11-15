@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "870779611953",
+    "project_id": "car-detailing-261115",
+    "storage_bucket": "car-detailing-261115.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870779611953:android:d03103cc156262776d9e10",
+        "android_client_info": {
+          "package_name": "com.nananeko.car_detailing"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJMqKPOszkpem_7I1rlU1vvQGVjYHdE2E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

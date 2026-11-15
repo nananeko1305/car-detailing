@@ -1,0 +1,74 @@
+name: car_detailing
+description: "Car Detailing: bookings, a shared wallet and earnings for a detailing crew."
+publish_to: 'none'
+
+# The release version comes from the git tags in CI; this is only a floor.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cloud_firestore: ^6.10.0
+  firebase_auth: ^6.7.0
+  firebase_core: ^4.15.0
+  firebase_messaging: ^16.7.0
+  http: ^1.6.0
+  intl: ^0.20.3
+  package_info_plus: ^10.2.1
+  qr_flutter: ^4.1.0
+  share_plus: ^13.3.0
+  shared_preferences: ^2.5.5
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.4
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+    - assets/icon/logo.png
+    - assets/price_list.json
+    - assets/fonts/licenses/
+
+  # Bundled, never fetched: a font loaded at run time fails offline.
+  # Both under the SIL Open Font License.
+  fonts:
+    - family: SpaceGrotesk
+      fonts:
+        - asset: assets/fonts/SpaceGrotesk-500.ttf
+          weight: 500
+        - asset: assets/fonts/SpaceGrotesk-600.ttf
+          weight: 600
+        - asset: assets/fonts/SpaceGrotesk-700.ttf
+          weight: 700
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-400.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-500.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-600.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-700.ttf
+          weight: 700
+
+# `dart run flutter_launcher_icons`: the launcher icon from the same drawing
+# as AppLogo, with the hexagon inside the adaptive icon's safe zone.
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: assets/icon/logo.png
+  adaptive_icon_background: "#111317"
+  adaptive_icon_foreground: assets/icon/foreground.png
+  # foreground.png already keeps the mark inside the safe zone.
+  adaptive_icon_foreground_inset: 0
+  min_sdk_android: 21

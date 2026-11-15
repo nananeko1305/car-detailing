@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Serbian, Latin script. The same text is in values-sr and values-b+sr+Latn,
+     because a phone set to Serbian (Latin) skips values-sr, which Android reads
+     as Cyrillic. Keep the two files the same. -->
+<resources>
+    <string name="update_notification_title">Nova verzija je spremna</string>
+    <string name="update_notification_body">Verzija %1$s je spremna. Dodirni za preuzimanje.</string>
+    <string name="job_new_title">Novi termin</string>
+    <string name="job_changed_title">Termin izmenjen</string>
+    <string name="job_cancelled_title">Termin otkazan</string>
+    <string name="job_tomorrow_title">Sutra</string>
+    <string name="channel_jobs">Termini</string>
+    <string name="channel_reminders">Večernji podsetnik</string>
+    <string name="channel_updates">Nove verzije</string>
+</resources>
