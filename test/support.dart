@@ -81,13 +81,11 @@ Job jobOn(
   JobStatus status = JobStatus.booked,
   List<JobItem> items = const [sofa, premium],
   List<JobHelper> helpers = const [JobHelper(uid: 'marko', payMinor: 300000)],
-  int equipmentMinor = 80000,
 }) => Job(
   id: id,
   ownerId: 'stefan',
   date: date,
   start: '09:30',
-  end: '13:00',
   clientName: 'Jelena Marković-Radosavljević',
   clientPhone: '064 987 6543',
   address: 'Bulevar kralja Aleksandra 123, stan 45, Beograd',
@@ -96,7 +94,6 @@ Job jobOn(
   discountPercent: 15,
   priceMinor: 1351500,
   helpers: helpers,
-  equipmentMinor: equipmentMinor,
   notes: 'Audi Q7 crni, BG-123-XY. Interfon ne radi, zvati.',
   status: status,
   paidMinor: status == JobStatus.done ? 1351500 : null,
@@ -116,13 +113,7 @@ LiveData fakeData() {
       jobOn(dayFromToday(-2), id: 'late'),
       jobOn(dayFromToday(-1), id: 'done', status: JobStatus.done),
       jobOn(dayFromToday(-1), id: 'off', status: JobStatus.cancelled),
-      jobOn(
-        dayFromToday(-1),
-        id: 'plain',
-        items: const [],
-        helpers: const [],
-        equipmentMinor: 0,
-      ),
+      jobOn(dayFromToday(-1), id: 'plain', items: const [], helpers: const []),
     ]
     ..entries = [
       WalletEntry(

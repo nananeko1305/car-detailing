@@ -37,7 +37,6 @@ class Job {
     this.ownerId = '',
     required this.date,
     this.start = '',
-    this.end = '',
     this.clientName = '',
     this.clientPhone = '',
     this.address = '',
@@ -47,7 +46,6 @@ class Job {
     this.travelMinor = 0,
     this.priceMinor = 0,
     this.helpers = const [],
-    this.equipmentMinor = 0,
     this.notes = '',
     this.status = JobStatus.booked,
     this.paidMinor,
@@ -68,9 +66,8 @@ class Job {
   /// `yyyy-MM-dd`, see [dateKey].
   final String date;
 
-  /// `HH:mm`; [end] may be empty.
+  /// `HH:mm`. A job has no end time: it takes as long as it takes.
   final String start;
-  final String end;
   final String clientName;
   final String clientPhone;
   final String address;
@@ -85,9 +82,6 @@ class Job {
   /// Who helps the admin on it, each with their pay; empty = working alone.
   /// The profit always stays with the admin.
   final List<JobHelper> helpers;
-
-  /// Spent on equipment and supplies for this job.
-  final int equipmentMinor;
 
   /// Anything else, such as which car it is.
   final String notes;
@@ -127,8 +121,8 @@ class Job {
 
   int get helpersPaidMinor => helpers.fold(0, (a, h) => a + h.payMinor);
 
-  /// What a price leaves the admin after the helpers and the equipment.
-  int netOf(int priceMinor) => priceMinor - helpersPaidMinor - equipmentMinor;
+  /// What a price leaves the admin after the helpers' pay.
+  int netOf(int priceMinor) => priceMinor - helpersPaidMinor;
 
   /// What the finished job left the admin; nothing until it is done.
   int get netMinor => isDone ? netOf(earnedMinor) : 0;
@@ -138,9 +132,6 @@ class Job {
     if (items.isNotEmpty) return items.map((i) => i.label).join(' · ');
     return notes.split('\n').first.trim();
   }
-
-  /// "09:00", or "09:00–11:00".
-  String get timeRange => end.isEmpty ? start : '$start–$end';
 
   factory Job.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) =>
       Job.fromMap(doc.id, doc.data() ?? const {});
@@ -155,7 +146,6 @@ class Job {
       ownerId: ownerId,
       date: d['date'] as String? ?? '',
       start: d['start'] as String? ?? '',
-      end: d['end'] as String? ?? '',
       clientName: d['clientName'] as String? ?? '',
       clientPhone: d['clientPhone'] as String? ?? '',
       address: d['address'] as String? ?? '',
@@ -182,7 +172,6 @@ class Job {
                 if (w is String && w != ownerId) JobHelper(uid: w),
             ]
           : const [],
-      equipmentMinor: (d['equipmentMinor'] as num?)?.toInt() ?? 0,
       notes: d['notes'] as String? ?? '',
       status: statusFromName(d['status'] as String?),
       paidMinor: (d['paidMinor'] as num?)?.toInt(),
@@ -201,7 +190,8 @@ class Job {
   Map<String, dynamic> formFields() => {
     'date': date,
     'start': start,
-    'end': end,
+    // The rules and v1.x apps still expect an end; it is always empty now.
+    'end': '',
     'clientName': clientName.trim(),
     'clientPhone': clientPhone.trim(),
     'address': address.trim(),
@@ -211,7 +201,6 @@ class Job {
     'travelMinor': travelMinor,
     'priceMinor': priceMinor,
     'helpers': [for (final h in helpers) h.toMap()],
-    'equipmentMinor': equipmentMinor,
     'workers': workers,
     'notes': notes.trim(),
   };

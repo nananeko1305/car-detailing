@@ -159,9 +159,6 @@ class AppLocalizationsSr extends AppLocalizations {
   String get claimAdminTitle => 'Postani admin';
 
   @override
-  String get clear => 'Obriši';
-
-  @override
   String get clientName => 'Klijent (nije obavezno)';
 
   @override
@@ -172,6 +169,9 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get copyLink => 'Kopiraj link';
+
+  @override
+  String get costs => 'Troškovi';
 
   @override
   String get currentPassword => 'Trenutna lozinka';
@@ -280,23 +280,6 @@ class AppLocalizationsSr extends AppLocalizations {
   String enableWorkerQ(String name) {
     return 'Ponovo uključiti: $name?';
   }
-
-  @override
-  String get endTime => 'Kraj';
-
-  @override
-  String get equipment => 'Oprema';
-
-  @override
-  String get equipmentHint => 'Hemija, krpe… za ovaj posao';
-
-  @override
-  String equipmentShort(String amount) {
-    return 'oprema $amount';
-  }
-
-  @override
-  String get equipmentSpent => 'Potrošeno na opremu';
 
   @override
   String get errEmailInUse => 'Nalog sa ovim emailom već postoji.';
@@ -587,18 +570,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get ok => 'U redu';
 
   @override
-  String get onEquipment => 'Na opremu';
-
-  @override
   String get open => 'Otvori';
-
-  @override
-  String get otherCosts => 'Ostali troškovi';
-
-  @override
-  String otherCostsShort(String amount) {
-    return 'ostali troškovi $amount';
-  }
 
   @override
   String get over => 'Iznad';
@@ -832,11 +804,6 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get tryAgain => 'Pokušaj ponovo';
-
-  @override
-  String untilTime(String time) {
-    return 'do $time';
-  }
 
   @override
   String get upToDate => 'Imaš najnoviju verziju.';

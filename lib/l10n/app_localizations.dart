@@ -344,12 +344,6 @@ abstract class AppLocalizations {
   /// **'Become the admin'**
   String get claimAdminTitle;
 
-  /// No description provided for @clear.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear'**
-  String get clear;
-
   /// No description provided for @clientName.
   ///
   /// In en, this message translates to:
@@ -373,6 +367,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copy link'**
   String get copyLink;
+
+  /// No description provided for @costs.
+  ///
+  /// In en, this message translates to:
+  /// **'Costs'**
+  String get costs;
 
   /// No description provided for @currentPassword.
   ///
@@ -559,36 +559,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Switch {name} back on?'**
   String enableWorkerQ(String name);
-
-  /// No description provided for @endTime.
-  ///
-  /// In en, this message translates to:
-  /// **'End'**
-  String get endTime;
-
-  /// No description provided for @equipment.
-  ///
-  /// In en, this message translates to:
-  /// **'Equipment'**
-  String get equipment;
-
-  /// No description provided for @equipmentHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Chemicals, cloths… for this job'**
-  String get equipmentHint;
-
-  /// No description provided for @equipmentShort.
-  ///
-  /// In en, this message translates to:
-  /// **'equipment {amount}'**
-  String equipmentShort(String amount);
-
-  /// No description provided for @equipmentSpent.
-  ///
-  /// In en, this message translates to:
-  /// **'Spent on equipment'**
-  String get equipmentSpent;
 
   /// No description provided for @errEmailInUse.
   ///
@@ -1052,29 +1022,11 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get ok;
 
-  /// No description provided for @onEquipment.
-  ///
-  /// In en, this message translates to:
-  /// **'On equipment'**
-  String get onEquipment;
-
   /// No description provided for @open.
   ///
   /// In en, this message translates to:
   /// **'Open'**
   String get open;
-
-  /// No description provided for @otherCosts.
-  ///
-  /// In en, this message translates to:
-  /// **'Other costs'**
-  String get otherCosts;
-
-  /// No description provided for @otherCostsShort.
-  ///
-  /// In en, this message translates to:
-  /// **'other costs {amount}'**
-  String otherCostsShort(String amount);
 
   /// No description provided for @over.
   ///
@@ -1495,12 +1447,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try again'**
   String get tryAgain;
-
-  /// No description provided for @untilTime.
-  ///
-  /// In en, this message translates to:
-  /// **'until {time}'**
-  String untilTime(String time);
 
   /// No description provided for @upToDate.
   ///

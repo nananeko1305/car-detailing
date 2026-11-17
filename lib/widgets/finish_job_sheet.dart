@@ -11,8 +11,8 @@ import 'helpers_editor.dart';
 import 'pearl.dart';
 
 /// "Završi posao": what was charged (the agreed price unless it changed on
-/// the spot), whether it goes into the wallet, and who helped for how much
-/// and what the equipment cost, as booked unless it turned out otherwise.
+/// the spot), whether it goes into the wallet, and who helped for how much,
+/// as booked unless it turned out otherwise.
 Future<void> showFinishJobSheet(
   BuildContext context, {
   required LiveData data,
@@ -44,11 +44,6 @@ class _FinishSheetState extends State<_FinishSheet> {
   );
   late final _helpers = HelpersController(widget.job.helpers)
     ..addListener(_refresh);
-  late final _equipment = TextEditingController(
-    text: widget.job.equipmentMinor == 0
-        ? ''
-        : moneyToInput(widget.job.equipmentMinor),
-  )..addListener(_refresh);
   bool _toWallet = true;
 
   @override
@@ -60,7 +55,6 @@ class _FinishSheetState extends State<_FinishSheet> {
   @override
   void dispose() {
     _paid.dispose();
-    _equipment.dispose();
     _helpers.dispose();
     super.dispose();
   }
@@ -71,8 +65,7 @@ class _FinishSheetState extends State<_FinishSheet> {
 
   int get _leftOver =>
       (parseMoneyOrZero(_paid.text) ?? 0) -
-      _helpers.helpers.fold<int>(0, (a, h) => a + h.payMinor) -
-      (parseMoneyOrZero(_equipment.text) ?? 0);
+      _helpers.helpers.fold<int>(0, (a, h) => a + h.payMinor);
 
   void _finish() {
     final t = AppLocalizations.of(context);
@@ -87,7 +80,6 @@ class _FinishSheetState extends State<_FinishSheet> {
     final job = widget.job;
     final me = widget.me;
     final helpers = _helpers.helpers;
-    final equipment = parseMoneyOrZero(_equipment.text) ?? 0;
     final toWallet = _toWallet;
     final navigator = Navigator.of(context);
     saveInBackground(
@@ -98,7 +90,6 @@ class _FinishSheetState extends State<_FinishSheet> {
         paidMinor: paid,
         toWallet: toWallet,
         helpers: helpers,
-        equipmentMinor: equipment,
       ),
     );
     navigator.pop();
@@ -152,20 +143,6 @@ class _FinishSheetState extends State<_FinishSheet> {
             HelpersEditor(
               controller: _helpers,
               candidates: widget.data.helperCandidates,
-            ),
-            const SizedBox(height: 14),
-            TextFormField(
-              controller: _equipment,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: t.equipmentSpent,
-                suffixText: 'RSD',
-                prefixIcon: const Icon(Icons.cleaning_services_outlined),
-              ),
-              validator: (v) =>
-                  parseMoneyOrZero(v ?? '') == null ? t.invalidAmount : null,
             ),
             LeftOverLine(
               label: widget.data.userById(widget.me)?.isAdmin ?? false

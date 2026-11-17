@@ -156,7 +156,7 @@ class _Detail extends StatelessWidget {
           const SizedBox(height: 6),
           Text(dateText, style: c.display(22)),
           Text(
-            job.timeRange,
+            job.start,
             style: c.display(18, color: c.primary, weight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
@@ -183,16 +183,13 @@ class _Detail extends StatelessWidget {
                   ),
                   if (job.isDone)
                     _Row(t.charged, money(job.earnedMinor), strong: true),
-                  // Who helped for how much, the equipment, and what that
-                  // leaves the admin.
+                  // Who helped for how much, and what that leaves the admin.
                   for (final h in job.helpers)
                     _Row(
                       t.helperPay(data.nameOf(h.uid)),
                       '− ${money(h.payMinor)}',
                     ),
-                  if (job.equipmentMinor > 0)
-                    _Row(t.equipment, '− ${money(job.equipmentMinor)}'),
-                  if (job.helpers.isNotEmpty || job.equipmentMinor > 0)
+                  if (job.helpers.isNotEmpty)
                     _Row(
                       profile.isAdmin
                           ? t.leftForYou

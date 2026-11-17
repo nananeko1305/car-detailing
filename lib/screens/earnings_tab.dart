@@ -106,33 +106,17 @@ class _EarningsTabState extends State<EarningsTab> {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: StatTile(
-                label: t.onEquipment,
-                value: money(e.equipmentMinor),
-              ),
+              child: StatTile(label: t.costs, value: money(e.spendingMinor)),
             ),
           ],
         ),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: StatTile(
-                label: t.otherCosts,
-                value: money(e.spendingMinor),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: StatTile(
-                label: me.isAdmin
-                    ? t.myEarnings
-                    : t.adminEarnings(data.admin?.shortName ?? t.roleAdmin),
-                value: money(e.adminNetMinor),
-                color: e.adminNetMinor < 0 ? c.danger : c.mint,
-              ),
-            ),
-          ],
+        StatTile(
+          label: me.isAdmin
+              ? t.myEarnings
+              : t.adminEarnings(data.admin?.shortName ?? t.roleAdmin),
+          value: money(e.adminNetMinor),
+          color: e.adminNetMinor < 0 ? c.danger : c.mint,
         ),
         if (e.depositsMinor > 0 || e.cancelled > 0) ...[
           const SizedBox(height: 8),

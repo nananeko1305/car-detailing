@@ -10,8 +10,8 @@ import 'earnings_parts.dart';
 import 'month_switcher.dart';
 
 /// One month in the wallet. The admin sees what the month left them, what
-/// went to the helpers and what went on equipment; a worker sees what they
-/// were paid.
+/// went to the helpers and what was spent (equipment included, entered by
+/// hand); a worker sees what they were paid.
 class WalletMonthCard extends StatefulWidget {
   const WalletMonthCard({super.key, required this.data, required this.profile});
 
@@ -75,19 +75,15 @@ class _WalletMonthCardState extends State<WalletMonthCard> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: StatTile(
-                                label: t.onEquipment,
-                                value: money(e.equipmentMinor),
+                                label: t.costs,
+                                value: money(e.spendingMinor),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          [
-                            t.chargedShort(money(e.earnedMinor)),
-                            if (e.spendingMinor > 0)
-                              t.otherCostsShort(money(e.spendingMinor)),
-                          ].join(' · '),
+                          t.chargedShort(money(e.earnedMinor)),
                           style: TextStyle(fontSize: 12, color: c.muted),
                         ),
                       ],
