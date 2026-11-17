@@ -115,9 +115,12 @@ service cloud.firestore {
         'priceMinor', 'workers', 'notes', 'status', 'rev', 'updatedBy',
         'createdAt', 'updatedAt'];
     }
-    // Filled in when a job is done; a booked job may leave them out.
+    // Filled in when a job is done; a booked job may leave them out. The
+    // helpers ({uid, payMinor}) and the equipment cost came with v1.1.0, so
+    // jobs and apps from before them leave those out too.
     function jobKeys() {
-      return requiredJobKeys().concat(['paidMinor', 'toWallet', 'doneBy', 'doneAt']);
+      return requiredJobKeys().concat(['paidMinor', 'toWallet', 'doneBy', 'doneAt',
+        'helpers', 'equipmentMinor']);
     }
     function validJob(d) {
       return d.date is string && d.date.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
@@ -127,6 +130,8 @@ service cloud.firestore {
         && shortText(d.address, 200) && shortText(d.notes, 2000)
         && d.items is list && d.items.size() <= 60
         && d.workers is list && d.workers.size() <= 20
+        && d.get('helpers', []) is list && d.get('helpers', []).size() <= 10
+        && validMoney(d.get('equipmentMinor', 0))
         && validMoney(d.subtotalMinor)
         && d.discountPercent is int && d.discountPercent >= 0 && d.discountPercent <= 100
         && validMoney(d.travelMinor) && validMoney(d.priceMinor)

@@ -5,6 +5,14 @@
   "addItemOrNote": "Add an item from the price list, or a note.",
   "addWorker": "Add worker",
   "address": "Address (optional)",
+  "adminEarnings": "{name}'s earnings",
+  "@adminEarnings": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "agreedPrice": "Agreed price",
   "alreadyDone": "Already done",
   "alreadyDoneHint": "A client who came without booking",
@@ -57,7 +65,6 @@
   "byCategory": "By category",
   "byMonth": "By month",
   "byPriceList": "By the price list",
-  "byWorker": "By worker",
   "call": "Call",
   "cancel": "Cancel",
   "cancelJob": "Cancel booking",
@@ -77,6 +84,14 @@
   "changePassword": "Change password",
   "chargeTravel": "Charge for travel",
   "charged": "Charged",
+  "chargedShort": "charged {amount}",
+  "@chargedShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "checkUpdates": "Check for updates",
   "chooseLanguage": "Language",
   "claimAdminBody": "This is the first account. Enter your name and become the admin: you add the workers and keep the price list.",
@@ -87,7 +102,6 @@
   "clientPhone": "Client's phone (optional)",
   "confirmPassword": "Confirm new password",
   "copyLink": "Copy link",
-  "costs": "Costs",
   "currentPassword": "Current password",
   "date": "Date",
   "delete": "Delete",
@@ -147,7 +161,7 @@
     }
   },
   "download": "Download",
-  "earned": "Earned",
+  "earned": "Charged",
   "edit": "Edit",
   "editCategory": "Edit category",
   "editEntry": "Edit entry",
@@ -165,6 +179,17 @@
     }
   },
   "endTime": "End",
+  "equipment": "Equipment",
+  "equipmentHint": "Chemicals, cloths… for this job",
+  "equipmentShort": "equipment {amount}",
+  "@equipmentShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "equipmentSpent": "Spent on equipment",
   "errEmailInUse": "An account with this email already exists.",
   "errGeneric": "Something went wrong. Please try again.",
   "errInvalidEmail": "The email is not valid.",
@@ -196,8 +221,26 @@
       }
     }
   },
+  "givenToHelpers": "Given to helpers",
   "goBack": "Back",
+  "helpedBy": "Help: {names}",
+  "@helpedBy": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "helperPay": "Helper: {name}",
+  "@helperPay": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "history": "History",
+  "iGot": "My earnings",
   "inWallet": "In the wallet",
   "intoWallet": "Into the wallet",
   "intoWalletHint": "The money was handed in as cash",
@@ -239,7 +282,15 @@
   "languagePhone": "Phone language",
   "lastName": "Last name (optional)",
   "later": "Later",
-  "left": "Left",
+  "leftForAdmin": "Left for {name}",
+  "@leftForAdmin": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "leftForYou": "Left for you",
   "less": "Fewer",
   "licenses": "Licenses",
   "linkCopied": "Link copied.",
@@ -248,6 +299,7 @@
   "minChars6": "At least 6 characters",
   "month": "Month",
   "more": "More",
+  "myEarnings": "My earnings",
   "newCategory": "New category",
   "newDeposit": "Put money in",
   "newItem": "New item",
@@ -281,7 +333,7 @@
     }
   },
   "noJobsThisYear": "No finished jobs this year.",
-  "nobodyAssigned": "Nobody assigned",
+  "noWorkersYet": "No workers yet. The admin adds them under Workers.",
   "notEnoughBody": "Only {amount} can be spent. Put money in first, or spend less.",
   "@notEnoughBody": {
     "placeholders": {
@@ -305,12 +357,25 @@
   "notifications": "Notifications",
   "notificationsHint": "Choose which ones you get",
   "ok": "OK",
+  "onEquipment": "On equipment",
   "open": "Open",
+  "otherCosts": "Other costs",
+  "otherCostsShort": "other costs {amount}",
+  "@otherCostsShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "over": "Above",
+  "paidToHelpers": "Paid to helpers",
   "password": "Password",
   "passwordChanged": "Password changed.",
   "passwordsNoMatch": "Passwords do not match",
+  "paysThem": "Amount",
   "phone": "Phone (optional)",
+  "pickAHelper": "Pick who helps, or switch to “Working alone”.",
   "pickStartTime": "Pick the start time.",
   "pickedCount": "{count} chosen",
   "@pickedCount": {
@@ -391,6 +456,14 @@
   "tabEarnings": "Earnings",
   "tabWallet": "Wallet",
   "terms": "Terms",
+  "toHelpersShort": "helpers {amount}",
+  "@toHelpersShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "travel": "Travel",
   "travelFee": "Travel fee below that",
   "travelFeeHint": "0 = always free",
@@ -422,8 +495,11 @@
   "whoSpent": "Who spent it",
   "whoWorked": "Who did the work",
   "whoWorks": "Who works on it",
+  "withHelp": "I have help",
   "withoutPriceList": "Not from the price list",
   "workerAdded": "Worker added. Give them the email and the starting password.",
   "workers": "Workers",
+  "workingAlone": "Working alone",
+  "workingAloneShort": "Working alone",
   "year": "Year"
 }

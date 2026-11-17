@@ -68,6 +68,20 @@ class LiveData extends ChangeNotifier {
       if (!u.disabled) u,
   ];
 
+  /// The admin, to whom every job's profit goes; null until users load.
+  AppUser? get admin {
+    for (final u in users ?? const <AppUser>[]) {
+      if (u.isAdmin) return u;
+    }
+    return null;
+  }
+
+  /// Who can help on a job: the active accounts other than the admin.
+  List<AppUser> get helperCandidates => [
+    for (final u in activeUsers)
+      if (!u.isAdmin) u,
+  ];
+
   Job? jobById(String id) {
     for (final j in jobs ?? const <Job>[]) {
       if (j.id == id) return j;

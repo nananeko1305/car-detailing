@@ -128,6 +128,12 @@ abstract class AppLocalizations {
   /// **'Address (optional)'**
   String get address;
 
+  /// No description provided for @adminEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s earnings'**
+  String adminEarnings(String name);
+
   /// No description provided for @agreedPrice.
   ///
   /// In en, this message translates to:
@@ -230,12 +236,6 @@ abstract class AppLocalizations {
   /// **'By the price list'**
   String get byPriceList;
 
-  /// No description provided for @byWorker.
-  ///
-  /// In en, this message translates to:
-  /// **'By worker'**
-  String get byWorker;
-
   /// No description provided for @call.
   ///
   /// In en, this message translates to:
@@ -308,6 +308,12 @@ abstract class AppLocalizations {
   /// **'Charged'**
   String get charged;
 
+  /// No description provided for @chargedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'charged {amount}'**
+  String chargedShort(String amount);
+
   /// No description provided for @checkUpdates.
   ///
   /// In en, this message translates to:
@@ -367,12 +373,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copy link'**
   String get copyLink;
-
-  /// No description provided for @costs.
-  ///
-  /// In en, this message translates to:
-  /// **'Costs'**
-  String get costs;
 
   /// No description provided for @currentPassword.
   ///
@@ -503,7 +503,7 @@ abstract class AppLocalizations {
   /// No description provided for @earned.
   ///
   /// In en, this message translates to:
-  /// **'Earned'**
+  /// **'Charged'**
   String get earned;
 
   /// No description provided for @edit.
@@ -565,6 +565,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'End'**
   String get endTime;
+
+  /// No description provided for @equipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment'**
+  String get equipment;
+
+  /// No description provided for @equipmentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Chemicals, cloths… for this job'**
+  String get equipmentHint;
+
+  /// No description provided for @equipmentShort.
+  ///
+  /// In en, this message translates to:
+  /// **'equipment {amount}'**
+  String equipmentShort(String amount);
+
+  /// No description provided for @equipmentSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent on equipment'**
+  String get equipmentSpent;
 
   /// No description provided for @errEmailInUse.
   ///
@@ -668,17 +692,41 @@ abstract class AppLocalizations {
   /// **'Free travel for orders from {amount}'**
   String freeTravelRule(String amount);
 
+  /// No description provided for @givenToHelpers.
+  ///
+  /// In en, this message translates to:
+  /// **'Given to helpers'**
+  String get givenToHelpers;
+
   /// No description provided for @goBack.
   ///
   /// In en, this message translates to:
   /// **'Back'**
   String get goBack;
 
+  /// No description provided for @helpedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Help: {names}'**
+  String helpedBy(String names);
+
+  /// No description provided for @helperPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Helper: {name}'**
+  String helperPay(String name);
+
   /// No description provided for @history.
   ///
   /// In en, this message translates to:
   /// **'History'**
   String get history;
+
+  /// No description provided for @iGot.
+  ///
+  /// In en, this message translates to:
+  /// **'My earnings'**
+  String get iGot;
 
   /// No description provided for @inWallet.
   ///
@@ -782,11 +830,17 @@ abstract class AppLocalizations {
   /// **'Later'**
   String get later;
 
-  /// No description provided for @left.
+  /// No description provided for @leftForAdmin.
   ///
   /// In en, this message translates to:
-  /// **'Left'**
-  String get left;
+  /// **'Left for {name}'**
+  String leftForAdmin(String name);
+
+  /// No description provided for @leftForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Left for you'**
+  String get leftForYou;
 
   /// No description provided for @less.
   ///
@@ -835,6 +889,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'More'**
   String get more;
+
+  /// No description provided for @myEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'My earnings'**
+  String get myEarnings;
 
   /// No description provided for @newCategory.
   ///
@@ -932,11 +992,11 @@ abstract class AppLocalizations {
   /// **'No finished jobs this year.'**
   String get noJobsThisYear;
 
-  /// No description provided for @nobodyAssigned.
+  /// No description provided for @noWorkersYet.
   ///
   /// In en, this message translates to:
-  /// **'Nobody assigned'**
-  String get nobodyAssigned;
+  /// **'No workers yet. The admin adds them under Workers.'**
+  String get noWorkersYet;
 
   /// No description provided for @notEnoughBody.
   ///
@@ -992,17 +1052,41 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get ok;
 
+  /// No description provided for @onEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'On equipment'**
+  String get onEquipment;
+
   /// No description provided for @open.
   ///
   /// In en, this message translates to:
   /// **'Open'**
   String get open;
 
+  /// No description provided for @otherCosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Other costs'**
+  String get otherCosts;
+
+  /// No description provided for @otherCostsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'other costs {amount}'**
+  String otherCostsShort(String amount);
+
   /// No description provided for @over.
   ///
   /// In en, this message translates to:
   /// **'Above'**
   String get over;
+
+  /// No description provided for @paidToHelpers.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid to helpers'**
+  String get paidToHelpers;
 
   /// No description provided for @password.
   ///
@@ -1022,11 +1106,23 @@ abstract class AppLocalizations {
   /// **'Passwords do not match'**
   String get passwordsNoMatch;
 
+  /// No description provided for @paysThem.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get paysThem;
+
   /// No description provided for @phone.
   ///
   /// In en, this message translates to:
   /// **'Phone (optional)'**
   String get phone;
+
+  /// No description provided for @pickAHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick who helps, or switch to “Working alone”.'**
+  String get pickAHelper;
 
   /// No description provided for @pickStartTime.
   ///
@@ -1364,6 +1460,12 @@ abstract class AppLocalizations {
   /// **'Terms'**
   String get terms;
 
+  /// No description provided for @toHelpersShort.
+  ///
+  /// In en, this message translates to:
+  /// **'helpers {amount}'**
+  String toHelpersShort(String amount);
+
   /// No description provided for @travel.
   ///
   /// In en, this message translates to:
@@ -1466,6 +1568,12 @@ abstract class AppLocalizations {
   /// **'Who works on it'**
   String get whoWorks;
 
+  /// No description provided for @withHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'I have help'**
+  String get withHelp;
+
   /// No description provided for @withoutPriceList.
   ///
   /// In en, this message translates to:
@@ -1483,6 +1591,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Workers'**
   String get workers;
+
+  /// No description provided for @workingAlone.
+  ///
+  /// In en, this message translates to:
+  /// **'Working alone'**
+  String get workingAlone;
+
+  /// No description provided for @workingAloneShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Working alone'**
+  String get workingAloneShort;
 
   /// No description provided for @year.
   ///

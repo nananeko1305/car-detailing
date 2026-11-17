@@ -7,6 +7,7 @@ import '../models/wallet_entry.dart';
 import '../money/money.dart';
 import '../services/live_data.dart';
 import '../theme/app_colors.dart';
+import '../widgets/wallet_month_card.dart';
 import 'job_detail_screen.dart';
 import 'wallet_entry_screen.dart';
 
@@ -40,6 +41,19 @@ class WalletTab extends StatelessWidget {
     } else if (m.entry != null) {
       _openEntry(context, m.entry!.type, m.entry);
     }
+  }
+
+  /// "naplaćeno 7.380 · radnicima 2.000 · oprema 500" under a finished job
+  /// whose helpers or equipment took part of the money; null otherwise.
+  String? _jobDetail(AppLocalizations t, WalletMovement m, String locale) {
+    final j = m.job;
+    if (j == null || (j.helpers.isEmpty && j.equipmentMinor == 0)) return null;
+    String money(int v) => formatMoney(v, locale, unit: false);
+    return [
+      t.chargedShort(money(j.earnedMinor)),
+      if (j.helpers.isNotEmpty) t.toHelpersShort(money(j.helpersPaidMinor)),
+      if (j.equipmentMinor > 0) t.equipmentShort(money(j.equipmentMinor)),
+    ].join(' · ');
   }
 
   @override
@@ -93,6 +107,8 @@ class WalletTab extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(height: 12),
+        WalletMonthCard(data: data, profile: profile),
         const SizedBox(height: 18),
         Text(t.history, style: c.display(17)),
         const SizedBox(height: 8),
@@ -111,6 +127,7 @@ class WalletTab extends StatelessWidget {
             who: data.nameOf(m.userId),
             date: DateFormat.MMMd(locale).format(m.date),
             amount: formatMoney(m.signedMinor.abs(), locale),
+            detail: _jobDetail(t, m, locale),
             onTap: () => _openMovement(context, m),
           ),
       ],
@@ -125,6 +142,7 @@ class _MovementTile extends StatelessWidget {
     required this.date,
     required this.amount,
     required this.onTap,
+    this.detail,
   });
 
   final WalletMovement movement;
@@ -132,6 +150,9 @@ class _MovementTile extends StatelessWidget {
   final String date;
   final String amount;
   final VoidCallback onTap;
+
+  /// A job's split: charged, helpers, equipment.
+  final String? detail;
 
   @override
   Widget build(BuildContext context) {
@@ -182,6 +203,13 @@ class _MovementTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, color: c.muted),
                   ),
+                  if (detail != null)
+                    Text(
+                      detail!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12, color: c.secondary),
+                    ),
                 ],
               ),
             ),

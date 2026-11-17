@@ -73,8 +73,12 @@ accounts resets all state below it.
   all three, and the worker announces by comparing `rev` with `pushRev`.
 - **Never `set()` an existing job.** It would drop the worker's `pushRev` and
   `pushStatus`, which the rules refuse. Edits use `update()`.
-- **Money is an `int` in para, dinars only.** Shares (per worker, per
-  category) are split in whole dinars so they always add up.
+- **Money is an `int` in para, dinars only.** Category shares are split in
+  whole dinars so they always add up.
+- **The profit is the admin's.** A job's `helpers` carry their own pay;
+  `Job.netMinor` (charged − helpers − equipment) is what the wallet takes in
+  and what the admin keeps. Old jobs without `helpers` fall back to
+  `workers` in `Job.fromMap`; keep writing `workers` for v1.0.x apps.
 - **Balances and earnings are computed, never stored.**
 - **User-visible text goes through `AppLocalizations`**, in both `.arb` files,
   then `flutter gen-l10n`. Serbian is `sr-Latn` (`kSerbianLatin`); plain `sr`

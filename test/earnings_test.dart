@@ -9,7 +9,8 @@ Job job(
   JobStatus status = JobStatus.done,
   int price = 500000,
   int? paid,
-  List<String> workers = const [],
+  List<JobHelper> helpers = const [],
+  int equipment = 0,
   List<JobItem> items = const [],
   bool toWallet = true,
 }) => Job(
@@ -19,7 +20,8 @@ Job job(
   priceMinor: price,
   paidMinor: status == JobStatus.done ? (paid ?? price) : null,
   status: status,
-  workers: workers,
+  helpers: helpers,
+  equipmentMinor: equipment,
   items: items,
   toWallet: toWallet,
 );
@@ -37,8 +39,21 @@ WalletEntry entry(DateTime date, int amount, {bool spending = true}) =>
 void main() {
   group('Earnings', () {
     final jobs = [
-      job('2026-11-03', price: 500000, workers: ['a']),
-      job('2026-11-16', price: 918000, workers: ['a', 'b']),
+      job(
+        '2026-11-03',
+        price: 500000,
+        helpers: const [JobHelper(uid: 'a', payMinor: 100000)],
+        equipment: 20000,
+      ),
+      job(
+        '2026-11-16',
+        price: 918000,
+        helpers: const [
+          JobHelper(uid: 'a', payMinor: 150000),
+          JobHelper(uid: 'b', payMinor: 150000),
+        ],
+        equipment: 50000,
+      ),
       job('2026-11-20', status: JobStatus.booked),
       job('2026-11-21', status: JobStatus.cancelled),
       job('2026-10-30', price: 100000),
@@ -63,18 +78,19 @@ void main() {
       expect(nov.averageMinor, (500000 + 918000 + 250000) ~/ 3);
     });
 
-    test('costs are spending; deposits are shown apart', () {
+    test('other costs are spending; deposits are shown apart', () {
       expect(nov.spendingMinor, 120000);
       expect(nov.depositsMinor, 200000);
-      expect(nov.netMinor, nov.earnedMinor - 120000);
     });
 
-    test('workers share a job equally and it adds up', () {
-      expect(nov.byWorker['a'], 500000 + 459000);
-      expect(nov.byWorker['b'], 459000);
-      expect(nov.unassignedMinor, 250000);
-      final shared = nov.byWorker.values.fold<int>(0, (a, v) => a + v);
-      expect(shared + nov.unassignedMinor, nov.earnedMinor);
+    test('helpers get what they were paid, the admin the rest', () {
+      expect(nov.helpersPaidMinor, 400000);
+      expect(nov.equipmentMinor, 70000);
+      expect(nov.byHelper, {'a': 250000, 'b': 150000});
+      expect(nov.paidTo('a'), 250000);
+      expect(nov.paidTo('nobody'), 0);
+      // Charged, less helpers, equipment and other costs.
+      expect(nov.adminNetMinor, 1668000 - 400000 - 70000 - 120000);
     });
 
     test('a year view sums each month', () {
@@ -90,15 +106,59 @@ void main() {
     });
   });
 
-  test('worker shares are whole dinars, a leftover dinar to the first', () {
-    final shares = workerShares(
-      job('2026-11-01', price: 1351500, workers: ['a', 'b']),
+  group('a job with helpers and equipment', () {
+    final j = job(
+      '2026-11-16',
+      price: 918000,
+      helpers: const [
+        JobHelper(uid: 'a', payMinor: 150000),
+        JobHelper(uid: 'b', payMinor: 150000),
+      ],
+      equipment: 50000,
     );
-    expect(shares, {'a': 675800, 'b': 675700});
-    final odd = workerShares(
-      job('2026-11-01', price: 100050, workers: ['a', 'b', 'c']),
-    );
-    expect(odd, {'a': 33450, 'b': 33300, 'c': 33300});
+
+    test('leaves the admin the price less helpers and equipment', () {
+      expect(j.helpersPaidMinor, 300000);
+      expect(j.netMinor, 918000 - 300000 - 50000);
+      expect(j.workers, ['a', 'b']);
+      final booked = job('2026-11-20', status: JobStatus.booked, price: 5000);
+      expect(booked.netMinor, 0);
+    });
+
+    test('writes helpers, equipment and, for older apps, workers', () {
+      final f = j.formFields();
+      expect(f['helpers'], [
+        {'uid': 'a', 'payMinor': 150000},
+        {'uid': 'b', 'payMinor': 150000},
+      ]);
+      expect(f['equipmentMinor'], 50000);
+      expect(f['workers'], ['a', 'b']);
+    });
+  });
+
+  group('jobs from v1.0.x, without helpers', () {
+    test('the live job: booked by the admin, who works on it alone', () {
+      final j = Job.fromMap('x', {
+        'ownerId': 'filip',
+        'date': '2026-11-19',
+        'workers': ['filip'],
+        'status': 'booked',
+        'priceMinor': 210000,
+      });
+      expect(j.helpers, isEmpty);
+      expect(j.equipmentMinor, 0);
+    });
+
+    test('other people on it become helpers with no pay recorded', () {
+      final j = Job.fromMap('x', {
+        'ownerId': 'filip',
+        'workers': ['filip', 'petar'],
+        'status': 'done',
+        'paidMinor': 500000,
+      });
+      expect(j.helpers.map((h) => (h.uid, h.payMinor)), [('petar', 0)]);
+      expect(j.netMinor, 500000);
+    });
   });
 
   test('category shares follow the list price and add up to what was paid', () {
@@ -143,16 +203,23 @@ void main() {
 
   group('wallet', () {
     final jobs = [
-      job('2026-11-03', price: 500000),
+      job(
+        '2026-11-03',
+        price: 500000,
+        helpers: const [JobHelper(uid: 'a', payMinor: 100000)],
+        equipment: 20000,
+      ),
       job('2026-11-04', price: 200000, toWallet: false),
       job('2026-11-05', status: JobStatus.booked),
     ];
     final entries = [entry(DateTime(2026, 11, 5), 120000)];
 
-    test('finished jobs with "into the wallet" come in by themselves', () {
+    test('a finished job brings in what helpers and equipment leave', () {
       final m = WalletMovement.merge(jobs, entries);
       expect(m.length, 2);
-      expect(WalletMovement.balance(m), 500000 - 120000);
+      final fromJob = m.firstWhere((x) => x.job != null);
+      expect(fromJob.signedMinor, 500000 - 100000 - 20000);
+      expect(WalletMovement.balance(m), 380000 - 120000);
     });
 
     test('spending cannot take the wallet below zero', () {

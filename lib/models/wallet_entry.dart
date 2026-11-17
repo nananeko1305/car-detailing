@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'job.dart';
 
 /// Manual wallet movements. Job income is not stored here; it comes straight
-/// from finished jobs with `toWallet` on (see [WalletMovement]).
+/// from finished jobs with `toWallet` on (see [WalletMovement]): what was
+/// charged, less the helpers' pay and the equipment, which leave the wallet
+/// with it.
 enum WalletEntryType { deposit, withdrawal }
 
 /// A manual deposit into, or spending from, the shared wallet, stored in
@@ -71,9 +73,10 @@ class WalletMovement {
     this.entry,
   });
 
+  /// A finished job: charged in, helpers and equipment out, as one line.
   factory WalletMovement.fromJob(Job j) => WalletMovement._(
     date: j.doneAt ?? j.day,
-    signedMinor: j.earnedMinor,
+    signedMinor: j.netMinor,
     description: j.title,
     userId: j.doneBy,
     job: j,
