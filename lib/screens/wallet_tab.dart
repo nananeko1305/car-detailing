@@ -43,16 +43,15 @@ class WalletTab extends StatelessWidget {
     }
   }
 
-  /// "naplaćeno 7.380 · radnicima 2.000 · oprema 500" under a finished job
-  /// whose helpers or equipment took part of the money; null otherwise.
+  /// "naplaćeno 7.380 · radnicima 2.000" under a finished job whose helpers
+  /// took part of the money; null otherwise.
   String? _jobDetail(AppLocalizations t, WalletMovement m, String locale) {
     final j = m.job;
-    if (j == null || (j.helpers.isEmpty && j.equipmentMinor == 0)) return null;
+    if (j == null || j.helpers.isEmpty) return null;
     String money(int v) => formatMoney(v, locale, unit: false);
     return [
       t.chargedShort(money(j.earnedMinor)),
-      if (j.helpers.isNotEmpty) t.toHelpersShort(money(j.helpersPaidMinor)),
-      if (j.equipmentMinor > 0) t.equipmentShort(money(j.equipmentMinor)),
+      t.toHelpersShort(money(j.helpersPaidMinor)),
     ].join(' · ');
   }
 
@@ -151,7 +150,7 @@ class _MovementTile extends StatelessWidget {
   final String amount;
   final VoidCallback onTap;
 
-  /// A job's split: charged, helpers, equipment.
+  /// A job's split: charged, and what went to the helpers.
   final String? detail;
 
   @override

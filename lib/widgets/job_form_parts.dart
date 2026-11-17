@@ -13,33 +13,20 @@ class TapField extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.onTap,
-    this.onClear,
   });
 
   final String label;
   final String value;
   final IconData icon;
   final VoidCallback onTap;
-  final VoidCallback? onClear;
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: onTap,
       child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon),
-          suffixIcon: onClear == null || value.isEmpty
-              ? null
-              : IconButton(
-                  tooltip: t.clear,
-                  icon: const Icon(Icons.close_rounded),
-                  onPressed: onClear,
-                ),
-        ),
+        decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
         isEmpty: value.isEmpty,
         child: Text(value, maxLines: 1),
       ),

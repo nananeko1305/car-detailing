@@ -34,22 +34,19 @@ class JobRepository {
   Future<void> update(Job job, String me) =>
       _write(job.id, me, job.formFields());
 
-  /// Marks the job done with what was charged, who helped for how much, and
-  /// what the equipment cost: the same fields the booking had, as they
-  /// turned out.
+  /// Marks the job done with what was charged and who helped for how much,
+  /// as it turned out.
   Future<void> finish(
     String id,
     String me, {
     required int paidMinor,
     required bool toWallet,
     required List<JobHelper> helpers,
-    required int equipmentMinor,
   }) => _write(id, me, {
     'status': JobStatus.done.name,
     'paidMinor': paidMinor,
     'toWallet': toWallet,
     'helpers': [for (final h in helpers) h.toMap()],
-    'equipmentMinor': equipmentMinor,
     'workers': [for (final h in helpers) h.uid],
     'doneBy': me,
     'doneAt': FieldValue.serverTimestamp(),

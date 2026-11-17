@@ -45,7 +45,6 @@ class _JobFormScreenState extends State<JobFormScreen> {
   late final Job? _old = widget.job;
   late DateTime _day = _old?.day ?? dayOf(widget.day ?? DateTime.now());
   late String _start = _old?.start ?? '';
-  late String _end = _old?.end ?? '';
   late final _client = TextEditingController(text: _old?.clientName);
   late final _phone = TextEditingController(text: _old?.clientPhone);
   late final _address = TextEditingController(text: _old?.address);
@@ -56,11 +55,6 @@ class _JobFormScreenState extends State<JobFormScreen> {
   late List<JobItem> _items = [...?_old?.items];
   late final _helpers = HelpersController([...?_old?.helpers])
     ..addListener(_refresh);
-  late final _equipment = TextEditingController(
-    text: (_old?.equipmentMinor ?? 0) == 0
-        ? ''
-        : moneyToInput(_old!.equipmentMinor),
-  )..addListener(_refresh);
   late bool _chargeTravel = (_old?.travelMinor ?? 1) > 0;
   late bool _priceTyped = _old != null && _old.priceMinor != _quote.totalMinor;
   bool _alreadyDone = false;
@@ -71,7 +65,7 @@ class _JobFormScreenState extends State<JobFormScreen> {
 
   @override
   void dispose() {
-    for (final c in [_client, _phone, _address, _notes, _price, _equipment]) {
+    for (final c in [_client, _phone, _address, _notes, _price]) {
       c.dispose();
     }
     _helpers.dispose();
@@ -116,10 +110,8 @@ class _JobFormScreenState extends State<JobFormScreen> {
     if (picked != null) setState(() => _day = picked);
   }
 
-  Future<void> _pickTime(bool start) async {
-    final current = start ? _start : _end;
-    final parts = (current.isEmpty ? (start ? '09:00' : _start) : current)
-        .split(':');
+  Future<void> _pickStart() async {
+    final parts = (_start.isEmpty ? '09:00' : _start).split(':');
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(
@@ -135,7 +127,7 @@ class _JobFormScreenState extends State<JobFormScreen> {
     final text =
         '${picked.hour.toString().padLeft(2, '0')}:'
         '${picked.minute.toString().padLeft(2, '0')}';
-    setState(() => start ? _start = text : _end = text);
+    setState(() => _start = text);
   }
 
   void _save() {
@@ -161,7 +153,6 @@ class _JobFormScreenState extends State<JobFormScreen> {
       id: _old?.id ?? '',
       date: dateKey(_day),
       start: _start,
-      end: _end,
       clientName: _client.text,
       clientPhone: _phone.text,
       address: _address.text,
@@ -171,7 +162,6 @@ class _JobFormScreenState extends State<JobFormScreen> {
       travelMinor: q.travelMinor,
       priceMinor: price,
       helpers: _helpers.helpers,
-      equipmentMinor: parseMoneyOrZero(_equipment.text) ?? 0,
       notes: _notes.text,
       status: _alreadyDone ? JobStatus.done : JobStatus.booked,
       paidMinor: _alreadyDone ? price : null,
@@ -189,11 +179,10 @@ class _JobFormScreenState extends State<JobFormScreen> {
     Navigator.of(context).pop();
   }
 
-  /// What the price leaves the admin after the helpers and the equipment.
+  /// What the price leaves the admin after the helpers' pay.
   int get _leftOver =>
       (parseMoneyOrZero(_price.text) ?? 0) -
-      _helpers.helpers.fold<int>(0, (a, h) => a + h.payMinor) -
-      (parseMoneyOrZero(_equipment.text) ?? 0);
+      _helpers.helpers.fold<int>(0, (a, h) => a + h.payMinor);
 
   String _leftLabel(AppLocalizations t) => widget.profile.isAdmin
       ? t.leftForYou
@@ -230,27 +219,11 @@ class _JobFormScreenState extends State<JobFormScreen> {
               onTap: _pickDay,
             ),
             gap,
-            Row(
-              children: [
-                Expanded(
-                  child: TapField(
-                    label: t.startTime,
-                    value: _start,
-                    icon: Icons.schedule_rounded,
-                    onTap: () => _pickTime(true),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TapField(
-                    label: t.endTime,
-                    value: _end,
-                    icon: Icons.schedule_outlined,
-                    onTap: () => _pickTime(false),
-                    onClear: () => setState(() => _end = ''),
-                  ),
-                ),
-              ],
+            TapField(
+              label: t.startTime,
+              value: _start,
+              icon: Icons.schedule_rounded,
+              onTap: _pickStart,
             ),
             gap,
             TextFormField(
@@ -330,21 +303,6 @@ class _JobFormScreenState extends State<JobFormScreen> {
             HelpersEditor(
               controller: _helpers,
               candidates: widget.data.helperCandidates,
-            ),
-            gap,
-            TextFormField(
-              controller: _equipment,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              decoration: InputDecoration(
-                labelText: t.equipmentSpent,
-                hintText: t.equipmentHint,
-                suffixText: 'RSD',
-                prefixIcon: const Icon(Icons.cleaning_services_outlined),
-              ),
-              validator: (v) =>
-                  parseMoneyOrZero(v ?? '') == null ? t.invalidAmount : null,
             ),
             LeftOverLine(label: _leftLabel(t), amount: _leftOver),
             gap,

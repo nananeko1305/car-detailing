@@ -68,11 +68,6 @@ class JobCard extends StatelessWidget {
                         color: cancelled ? c.muted : c.primary,
                       ),
                     ),
-                    if (job.end.isNotEmpty)
-                      Text(
-                        t.untilTime(job.end),
-                        style: TextStyle(fontSize: 11, color: c.muted),
-                      ),
                   ],
                 ),
               ),

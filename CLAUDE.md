@@ -49,7 +49,7 @@ accounts resets all state below it.
 
 | Path | Holds |
 |---|---|
-| `lib/models/` | Immutable classes and the pure logic: `pricing.dart` (`quote`), `earnings.dart` (`Earnings`, worker and category shares), `WalletMovement` |
+| `lib/models/` | Immutable classes and the pure logic: `pricing.dart` (`quote`), `earnings.dart` (`Earnings`: pay by helper, category shares), `WalletMovement` |
 | `lib/money/` | Parsing and formatting of dinars |
 | `lib/services/` | Singleton repositories (`XRepository.instance`), `LiveData`, push, announcer, auth, updates |
 | `lib/screens/` | Full screens; `HomeScreen` is the shell with three tabs and the drawer |
@@ -76,9 +76,12 @@ accounts resets all state below it.
 - **Money is an `int` in para, dinars only.** Category shares are split in
   whole dinars so they always add up.
 - **The profit is the admin's.** A job's `helpers` carry their own pay;
-  `Job.netMinor` (charged − helpers − equipment) is what the wallet takes in
-  and what the admin keeps. Old jobs without `helpers` fall back to
-  `workers` in `Job.fromMap`; keep writing `workers` for v1.0.x apps.
+  `Job.netMinor` (charged − helpers) is what the wallet takes in and what the
+  admin keeps. Old jobs without `helpers` fall back to `workers` in
+  `Job.fromMap`; keep writing `workers` for v1.0.x apps.
+- **Fields kept only for the rules and older apps:** `end` is always written
+  as '' (the rules require it); `equipmentMinor` from v1.1.0 is still allowed
+  by the rules but never read or written. Equipment is wallet spending.
 - **Balances and earnings are computed, never stored.**
 - **User-visible text goes through `AppLocalizations`**, in both `.arb` files,
   then `flutter gen-l10n`. Serbian is `sr-Latn` (`kSerbianLatin`); plain `sr`

@@ -83,6 +83,8 @@ void main() {
       }
       expect(tester.takeException(), isNull);
       expect(find.text(sr ? 'Ostaje tebi' : 'Left for you'), findsOneWidget);
+      // No equipment: that goes in the wallet.
+      expect(find.textContaining(sr ? 'oprem' : 'quipment'), findsNothing);
     });
 
     testWidgets('finishing a job with helpers fits 360 px ($lang)', (
@@ -102,9 +104,9 @@ void main() {
       await tester.tap(finish);
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      // Prefilled from the booking: Marko's pay and the equipment.
+      // Prefilled from the booking: Marko's pay; no equipment field.
       expect(find.text('3000'), findsOneWidget);
-      expect(find.text('800'), findsOneWidget);
+      expect(find.textContaining(sr ? 'oprem' : 'quipment'), findsNothing);
     });
 
     testWidgets('wallet month: the admin sees the split ($lang)', (
@@ -116,7 +118,7 @@ void main() {
         find.text(sr ? 'Dato radnicima' : 'Given to helpers'),
         findsOneWidget,
       );
-      expect(find.text(sr ? 'Na opremu' : 'On equipment'), findsOneWidget);
+      expect(find.text(sr ? 'Troškovi' : 'Costs'), findsOneWidget);
     });
 
     testWidgets('wallet month: a worker sees what they got ($lang)', (
@@ -155,6 +157,9 @@ void main() {
         JobFormScreen(data: data, profile: admin, job: data.jobById('today')),
         scaffold: false,
       );
+      // A job has only a start time.
+      expect(find.text(sr ? 'Početak' : 'Start'), findsOneWidget);
+      expect(find.text(sr ? 'Kraj' : 'End'), findsNothing);
       await fits(
         tester,
         JobFormScreen(data: data, profile: admin, day: DateTime.now()),

@@ -10,7 +10,6 @@ Job job(
   int price = 500000,
   int? paid,
   List<JobHelper> helpers = const [],
-  int equipment = 0,
   List<JobItem> items = const [],
   bool toWallet = true,
 }) => Job(
@@ -21,7 +20,6 @@ Job job(
   paidMinor: status == JobStatus.done ? (paid ?? price) : null,
   status: status,
   helpers: helpers,
-  equipmentMinor: equipment,
   items: items,
   toWallet: toWallet,
 );
@@ -43,7 +41,6 @@ void main() {
         '2026-11-03',
         price: 500000,
         helpers: const [JobHelper(uid: 'a', payMinor: 100000)],
-        equipment: 20000,
       ),
       job(
         '2026-11-16',
@@ -52,7 +49,6 @@ void main() {
           JobHelper(uid: 'a', payMinor: 150000),
           JobHelper(uid: 'b', payMinor: 150000),
         ],
-        equipment: 50000,
       ),
       job('2026-11-20', status: JobStatus.booked),
       job('2026-11-21', status: JobStatus.cancelled),
@@ -78,19 +74,18 @@ void main() {
       expect(nov.averageMinor, (500000 + 918000 + 250000) ~/ 3);
     });
 
-    test('other costs are spending; deposits are shown apart', () {
+    test('costs are wallet spending; deposits are shown apart', () {
       expect(nov.spendingMinor, 120000);
       expect(nov.depositsMinor, 200000);
     });
 
     test('helpers get what they were paid, the admin the rest', () {
       expect(nov.helpersPaidMinor, 400000);
-      expect(nov.equipmentMinor, 70000);
       expect(nov.byHelper, {'a': 250000, 'b': 150000});
       expect(nov.paidTo('a'), 250000);
       expect(nov.paidTo('nobody'), 0);
-      // Charged, less helpers, equipment and other costs.
-      expect(nov.adminNetMinor, 1668000 - 400000 - 70000 - 120000);
+      // Charged, less the helpers and the spending (equipment included).
+      expect(nov.adminNetMinor, 1668000 - 400000 - 120000);
     });
 
     test('a year view sums each month', () {
@@ -106,7 +101,7 @@ void main() {
     });
   });
 
-  group('a job with helpers and equipment', () {
+  group('a job with helpers', () {
     final j = job(
       '2026-11-16',
       price: 918000,
@@ -114,25 +109,25 @@ void main() {
         JobHelper(uid: 'a', payMinor: 150000),
         JobHelper(uid: 'b', payMinor: 150000),
       ],
-      equipment: 50000,
     );
 
-    test('leaves the admin the price less helpers and equipment', () {
+    test('leaves the admin the price less the helpers', () {
       expect(j.helpersPaidMinor, 300000);
-      expect(j.netMinor, 918000 - 300000 - 50000);
+      expect(j.netMinor, 918000 - 300000);
       expect(j.workers, ['a', 'b']);
       final booked = job('2026-11-20', status: JobStatus.booked, price: 5000);
       expect(booked.netMinor, 0);
     });
 
-    test('writes helpers, equipment and, for older apps, workers', () {
+    test('writes helpers and, for older apps, workers and an empty end', () {
       final f = j.formFields();
       expect(f['helpers'], [
         {'uid': 'a', 'payMinor': 150000},
         {'uid': 'b', 'payMinor': 150000},
       ]);
-      expect(f['equipmentMinor'], 50000);
       expect(f['workers'], ['a', 'b']);
+      expect(f['end'], '');
+      expect(f.containsKey('equipmentMinor'), isFalse);
     });
   });
 
@@ -146,7 +141,12 @@ void main() {
         'priceMinor': 210000,
       });
       expect(j.helpers, isEmpty);
-      expect(j.equipmentMinor, 0);
+    });
+
+    test('an end time is dropped: a job has only its start', () {
+      final j = Job.fromMap('x', {'start': '09:30', 'end': '13:00'});
+      expect(j.start, '09:30');
+      expect(j.formFields()['end'], '');
     });
 
     test('other people on it become helpers with no pay recorded', () {
@@ -201,31 +201,42 @@ void main() {
     expect(splitByWeight(10, [0, 0]), [5, 5]);
   });
 
+  test('equipment written by v1.1.0 is ignored: it goes in the wallet', () {
+    final j = Job.fromMap('x', {
+      'status': 'done',
+      'paidMinor': 500000,
+      'helpers': [
+        {'uid': 'a', 'payMinor': 100000},
+      ],
+      'equipmentMinor': 20000,
+    });
+    expect(j.netMinor, 400000);
+  });
+
   group('wallet', () {
     final jobs = [
       job(
         '2026-11-03',
         price: 500000,
         helpers: const [JobHelper(uid: 'a', payMinor: 100000)],
-        equipment: 20000,
       ),
       job('2026-11-04', price: 200000, toWallet: false),
       job('2026-11-05', status: JobStatus.booked),
     ];
     final entries = [entry(DateTime(2026, 11, 5), 120000)];
 
-    test('a finished job brings in what helpers and equipment leave', () {
+    test('a finished job brings in what the helpers leave', () {
       final m = WalletMovement.merge(jobs, entries);
       expect(m.length, 2);
       final fromJob = m.firstWhere((x) => x.job != null);
-      expect(fromJob.signedMinor, 500000 - 100000 - 20000);
-      expect(WalletMovement.balance(m), 380000 - 120000);
+      expect(fromJob.signedMinor, 500000 - 100000);
+      expect(WalletMovement.balance(m), 400000 - 120000);
     });
 
     test('spending cannot take the wallet below zero', () {
-      const balance = 380000;
-      final ok = entry(DateTime(2026, 11, 6), 380000);
-      final tooMuch = entry(DateTime(2026, 11, 6), 380100);
+      const balance = 400000;
+      final ok = entry(DateTime(2026, 11, 6), 400000);
+      final tooMuch = entry(DateTime(2026, 11, 6), 400100);
       expect(WalletMovement.overdraws(balance, ok), isFalse);
       expect(WalletMovement.overdraws(balance, tooMuch), isTrue);
     });
@@ -233,8 +244,8 @@ void main() {
     test('editing a spending counts what it already took out', () {
       final old = entry(DateTime(2026, 11, 5), 120000);
       final bigger = entry(DateTime(2026, 11, 5), 500000);
-      expect(WalletMovement.available(380000, old: old), 500000);
-      expect(WalletMovement.overdraws(380000, bigger, old: old), isFalse);
+      expect(WalletMovement.available(400000, old: old), 520000);
+      expect(WalletMovement.overdraws(400000, bigger, old: old), isFalse);
     });
   });
 

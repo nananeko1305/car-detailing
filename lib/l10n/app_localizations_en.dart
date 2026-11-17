@@ -159,9 +159,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get claimAdminTitle => 'Become the admin';
 
   @override
-  String get clear => 'Clear';
-
-  @override
   String get clientName => 'Client (optional)';
 
   @override
@@ -172,6 +169,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copyLink => 'Copy link';
+
+  @override
+  String get costs => 'Costs';
 
   @override
   String get currentPassword => 'Current password';
@@ -280,23 +280,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String enableWorkerQ(String name) {
     return 'Switch $name back on?';
   }
-
-  @override
-  String get endTime => 'End';
-
-  @override
-  String get equipment => 'Equipment';
-
-  @override
-  String get equipmentHint => 'Chemicals, cloths… for this job';
-
-  @override
-  String equipmentShort(String amount) {
-    return 'equipment $amount';
-  }
-
-  @override
-  String get equipmentSpent => 'Spent on equipment';
 
   @override
   String get errEmailInUse => 'An account with this email already exists.';
@@ -581,18 +564,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'OK';
 
   @override
-  String get onEquipment => 'On equipment';
-
-  @override
   String get open => 'Open';
-
-  @override
-  String get otherCosts => 'Other costs';
-
-  @override
-  String otherCostsShort(String amount) {
-    return 'other costs $amount';
-  }
 
   @override
   String get over => 'Above';
@@ -826,11 +798,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryAgain => 'Try again';
-
-  @override
-  String untilTime(String time) {
-    return 'until $time';
-  }
 
   @override
   String get upToDate => 'You have the latest version.';

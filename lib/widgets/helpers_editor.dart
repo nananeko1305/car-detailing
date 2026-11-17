@@ -194,7 +194,7 @@ class _HelperRow extends StatelessWidget {
   }
 }
 
-/// "Ostaje tebi: 5.380 RSD": the price less the helpers and the equipment.
+/// "Ostaje tebi: 5.380 RSD": the price less the helpers' pay.
 class LeftOverLine extends StatelessWidget {
   const LeftOverLine({super.key, required this.label, required this.amount});
 

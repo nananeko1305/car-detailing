@@ -97,11 +97,11 @@
   "claimAdminBody": "This is the first account. Enter your name and become the admin: you add the workers and keep the price list.",
   "claimAdminButton": "Become the admin",
   "claimAdminTitle": "Become the admin",
-  "clear": "Clear",
   "clientName": "Client (optional)",
   "clientPhone": "Client's phone (optional)",
   "confirmPassword": "Confirm new password",
   "copyLink": "Copy link",
+  "costs": "Costs",
   "currentPassword": "Current password",
   "date": "Date",
   "delete": "Delete",
@@ -178,18 +178,6 @@
       }
     }
   },
-  "endTime": "End",
-  "equipment": "Equipment",
-  "equipmentHint": "Chemicals, cloths… for this job",
-  "equipmentShort": "equipment {amount}",
-  "@equipmentShort": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "equipmentSpent": "Spent on equipment",
   "errEmailInUse": "An account with this email already exists.",
   "errGeneric": "Something went wrong. Please try again.",
   "errInvalidEmail": "The email is not valid.",
@@ -357,17 +345,7 @@
   "notifications": "Notifications",
   "notificationsHint": "Choose which ones you get",
   "ok": "OK",
-  "onEquipment": "On equipment",
   "open": "Open",
-  "otherCosts": "Other costs",
-  "otherCostsShort": "other costs {amount}",
-  "@otherCostsShort": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "over": "Above",
   "paidToHelpers": "Paid to helpers",
   "password": "Password",
@@ -476,14 +454,6 @@
     }
   },
   "tryAgain": "Try again",
-  "untilTime": "until {time}",
-  "@untilTime": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "upToDate": "You have the latest version.",
   "updateCheckFailed": "Couldn't check for updates.",
   "usePriceListPrice": "Use the price-list price",

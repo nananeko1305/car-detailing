@@ -8,7 +8,7 @@ const String kNoCategory = '';
 /// What a month or a year earned, computed from the jobs every time and never
 /// stored, so it cannot drift. A job counts on its own day, and only once
 /// it is done. The profit is the admin's: what was charged, less the
-/// helpers' pay, the equipment and the other spending.
+/// helpers' pay and the wallet spending.
 class Earnings {
   const Earnings._({
     required this.earnedMinor,
@@ -17,7 +17,6 @@ class Earnings {
     required this.byCategory,
     required this.byHelper,
     required this.helpersPaidMinor,
-    required this.equipmentMinor,
     required this.depositsMinor,
     required this.spendingMinor,
     required this.byMonth,
@@ -40,7 +39,6 @@ class Earnings {
     final byCategory = <String, int>{};
     final byHelper = <String, int>{};
     var helpersPaid = 0;
-    var equipment = 0;
     final byMonth = List<int>.filled(12, 0);
     for (final j in jobs) {
       if (!inRange(j.date)) continue;
@@ -54,7 +52,6 @@ class Earnings {
         byHelper[h.uid] = (byHelper[h.uid] ?? 0) + h.payMinor;
       }
       helpersPaid += j.helpersPaidMinor;
-      equipment += j.equipmentMinor;
     }
     done.sort((a, b) {
       final byDay = b.date.compareTo(a.date);
@@ -79,7 +76,6 @@ class Earnings {
       byCategory: byCategory,
       byHelper: byHelper,
       helpersPaidMinor: helpersPaid,
-      equipmentMinor: equipment,
       depositsMinor: deposits,
       spendingMinor: spending,
       byMonth: byMonth,
@@ -101,13 +97,10 @@ class Earnings {
   /// Paid to helpers, all of them together.
   final int helpersPaidMinor;
 
-  /// Spent on equipment for the finished jobs.
-  final int equipmentMinor;
-
   /// Money put into the wallet by hand: not earnings, shown apart.
   final int depositsMinor;
 
-  /// Spending from the wallet by hand: the other costs.
+  /// Spending from the wallet by hand, equipment included.
   final int spendingMinor;
 
   /// Earned per calendar month, January first (for the year view).
@@ -116,9 +109,8 @@ class Earnings {
   int get jobCount => done.length;
   int get averageMinor => done.isEmpty ? 0 : earnedMinor ~/ done.length;
 
-  /// The admin's profit: charged, less helpers, equipment and other costs.
-  int get adminNetMinor =>
-      earnedMinor - helpersPaidMinor - equipmentMinor - spendingMinor;
+  /// The admin's profit: charged, less the helpers and the spending.
+  int get adminNetMinor => earnedMinor - helpersPaidMinor - spendingMinor;
 
   /// What one helper got.
   int paidTo(String uid) => byHelper[uid] ?? 0;
