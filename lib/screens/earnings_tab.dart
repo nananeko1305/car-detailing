@@ -43,6 +43,7 @@ class _EarningsTabState extends State<EarningsTab> {
     final t = AppLocalizations.of(context);
     final c = context.colors;
     final data = widget.data;
+    final me = data.userById(widget.profile.uid) ?? widget.profile;
     if (data.jobs == null || data.entries == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -80,6 +81,15 @@ class _EarningsTabState extends State<EarningsTab> {
           onChanged: (p) => setState(() => _period = p),
         ),
         const SizedBox(height: 6),
+        // A worker's own pay comes first; the crew's figures follow.
+        if (!me.isAdmin) ...[
+          StatTile(
+            label: t.iGot,
+            value: money(e.paidTo(me.uid)),
+            color: c.mint,
+          ),
+          const SizedBox(height: 10),
+        ],
         HeroTotal(
           label: t.earned,
           value: money(e.earnedMinor),
@@ -89,14 +99,37 @@ class _EarningsTabState extends State<EarningsTab> {
         Row(
           children: [
             Expanded(
-              child: StatTile(label: t.costs, value: money(e.spendingMinor)),
+              child: StatTile(
+                label: t.givenToHelpers,
+                value: money(e.helpersPaidMinor),
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: StatTile(
-                label: t.left,
-                value: money(e.netMinor),
-                color: e.netMinor < 0 ? c.danger : c.mint,
+                label: t.onEquipment,
+                value: money(e.equipmentMinor),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: StatTile(
+                label: t.otherCosts,
+                value: money(e.spendingMinor),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: StatTile(
+                label: me.isAdmin
+                    ? t.myEarnings
+                    : t.adminEarnings(data.admin?.shortName ?? t.roleAdmin),
+                value: money(e.adminNetMinor),
+                color: e.adminNetMinor < 0 ? c.danger : c.mint,
               ),
             ),
           ],
@@ -135,16 +168,15 @@ class _EarningsTabState extends State<EarningsTab> {
             format: money,
           ),
         ],
-        if (e.byWorker.isNotEmpty || e.unassignedMinor > 0) ...[
+        if (e.byHelper.isNotEmpty) ...[
           const SizedBox(height: 18),
-          SectionTitle(t.byWorker),
+          SectionTitle(t.paidToHelpers),
           ShareList(
             rows: [
-              for (final entry in e.byWorker.entries)
+              for (final entry in e.byHelper.entries)
                 (data.nameOf(entry.key), entry.value),
-              if (e.unassignedMinor > 0) (t.nobodyAssigned, e.unassignedMinor),
             ],
-            total: e.earnedMinor,
+            total: e.helpersPaidMinor,
             format: money,
           ),
         ],

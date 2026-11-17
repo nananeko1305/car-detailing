@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../models/app_user.dart';
 import '../models/pricing.dart';
 import '../money/money.dart';
 import '../theme/app_colors.dart';
@@ -169,44 +168,6 @@ class QuoteSummary extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Who works on the job: a chip per active account.
-class WorkerChips extends StatelessWidget {
-  const WorkerChips({
-    super.key,
-    required this.users,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final List<AppUser> users;
-  final Set<String> selected;
-  final ValueChanged<Set<String>> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        for (final u in users)
-          FilterChip(
-            label: Text(u.shortName),
-            selected: selected.contains(u.uid),
-            selectedColor: c.soft,
-            checkmarkColor: c.primary,
-            side: BorderSide(
-              color: selected.contains(u.uid) ? c.primary : c.border,
-            ),
-            onSelected: (on) => onChanged(
-              on ? {...selected, u.uid} : ({...selected}..remove(u.uid)),
-            ),
-          ),
-      ],
     );
   }
 }

@@ -25,6 +25,11 @@ class AppLocalizationsSr extends AppLocalizations {
   String get address => 'Adresa (nije obavezno)';
 
   @override
+  String adminEarnings(String name) {
+    return 'Zarada: $name';
+  }
+
+  @override
   String get agreedPrice => 'Dogovorena cena';
 
   @override
@@ -87,9 +92,6 @@ class AppLocalizationsSr extends AppLocalizations {
   String get byPriceList => 'Po cenovniku';
 
   @override
-  String get byWorker => 'Po radniku';
-
-  @override
   String get call => 'Pozovi';
 
   @override
@@ -136,6 +138,11 @@ class AppLocalizationsSr extends AppLocalizations {
   String get charged => 'Naplaćeno';
 
   @override
+  String chargedShort(String amount) {
+    return 'naplaćeno $amount';
+  }
+
+  @override
   String get checkUpdates => 'Proveri ažuriranja';
 
   @override
@@ -165,9 +172,6 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get copyLink => 'Kopiraj link';
-
-  @override
-  String get costs => 'Troškovi';
 
   @override
   String get currentPassword => 'Trenutna lozinka';
@@ -246,7 +250,7 @@ class AppLocalizationsSr extends AppLocalizations {
   String get download => 'Preuzmi';
 
   @override
-  String get earned => 'Zarađeno';
+  String get earned => 'Naplaćeno';
 
   @override
   String get edit => 'Izmeni';
@@ -279,6 +283,20 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get endTime => 'Kraj';
+
+  @override
+  String get equipment => 'Oprema';
+
+  @override
+  String get equipmentHint => 'Hemija, krpe… za ovaj posao';
+
+  @override
+  String equipmentShort(String amount) {
+    return 'oprema $amount';
+  }
+
+  @override
+  String get equipmentSpent => 'Potrošeno na opremu';
 
   @override
   String get errEmailInUse => 'Nalog sa ovim emailom već postoji.';
@@ -338,10 +356,26 @@ class AppLocalizationsSr extends AppLocalizations {
   }
 
   @override
+  String get givenToHelpers => 'Dato radnicima';
+
+  @override
   String get goBack => 'Nazad';
 
   @override
+  String helpedBy(String names) {
+    return 'Pomoć: $names';
+  }
+
+  @override
+  String helperPay(String name) {
+    return 'Pomoćnik: $name';
+  }
+
+  @override
   String get history => 'Istorija';
+
+  @override
+  String get iGot => 'Moja zarada';
 
   @override
   String get inWallet => 'U novčaniku';
@@ -424,7 +458,12 @@ class AppLocalizationsSr extends AppLocalizations {
   String get later => 'Kasnije';
 
   @override
-  String get left => 'Ostaje';
+  String leftForAdmin(String name) {
+    return '$name dobija';
+  }
+
+  @override
+  String get leftForYou => 'Ostaje tebi';
 
   @override
   String get less => 'Manje';
@@ -449,6 +488,9 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get more => 'Više';
+
+  @override
+  String get myEarnings => 'Moja zarada';
 
   @override
   String get newCategory => 'Nova kategorija';
@@ -503,7 +545,8 @@ class AppLocalizationsSr extends AppLocalizations {
   String get noJobsThisYear => 'Nema završenih poslova te godine.';
 
   @override
-  String get nobodyAssigned => 'Nije dodeljeno';
+  String get noWorkersYet =>
+      'Još nema radnika. Admin ih dodaje u meniju Radnici.';
 
   @override
   String notEnoughBody(String amount) {
@@ -544,10 +587,24 @@ class AppLocalizationsSr extends AppLocalizations {
   String get ok => 'U redu';
 
   @override
+  String get onEquipment => 'Na opremu';
+
+  @override
   String get open => 'Otvori';
 
   @override
+  String get otherCosts => 'Ostali troškovi';
+
+  @override
+  String otherCostsShort(String amount) {
+    return 'ostali troškovi $amount';
+  }
+
+  @override
   String get over => 'Iznad';
+
+  @override
+  String get paidToHelpers => 'Isplaćeno radnicima';
 
   @override
   String get password => 'Lozinka';
@@ -559,7 +616,13 @@ class AppLocalizationsSr extends AppLocalizations {
   String get passwordsNoMatch => 'Lozinke se ne poklapaju';
 
   @override
+  String get paysThem => 'Iznos';
+
+  @override
   String get phone => 'Telefon (nije obavezno)';
+
+  @override
+  String get pickAHelper => 'Izaberi ko pomaže ili prebaci na „Radim sam”.';
 
   @override
   String get pickStartTime => 'Izaberi vreme početka.';
@@ -749,6 +812,11 @@ class AppLocalizationsSr extends AppLocalizations {
   String get terms => 'Uslovi';
 
   @override
+  String toHelpersShort(String amount) {
+    return 'radnicima $amount';
+  }
+
+  @override
   String get travel => 'Dolazak';
 
   @override
@@ -804,6 +872,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get whoWorks => 'Ko radi';
 
   @override
+  String get withHelp => 'Imam pomoć';
+
+  @override
   String get withoutPriceList => 'Van cenovnika';
 
   @override
@@ -811,6 +882,12 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get workers => 'Radnici';
+
+  @override
+  String get workingAlone => 'Radim sam';
+
+  @override
+  String get workingAloneShort => 'Radi sam';
 
   @override
   String get year => 'Godina';

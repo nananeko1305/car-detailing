@@ -7,11 +7,12 @@ import '../services/background_save.dart';
 import '../services/job_repository.dart';
 import '../services/live_data.dart';
 import '../theme/app_colors.dart';
-import 'job_form_parts.dart';
+import 'helpers_editor.dart';
 import 'pearl.dart';
 
 /// "Završi posao": what was charged (the agreed price unless it changed on
-/// the spot), whether it goes into the wallet, and who did the work.
+/// the spot), whether it goes into the wallet, and who helped for how much
+/// and what the equipment cost, as booked unless it turned out otherwise.
 Future<void> showFinishJobSheet(
   BuildContext context, {
   required LiveData data,
@@ -41,23 +42,52 @@ class _FinishSheetState extends State<_FinishSheet> {
   late final _paid = TextEditingController(
     text: moneyToInput(widget.job.priceMinor),
   );
-  late Set<String> _workers = {
-    ...widget.job.workers.isEmpty ? [widget.me] : widget.job.workers,
-  };
+  late final _helpers = HelpersController(widget.job.helpers)
+    ..addListener(_refresh);
+  late final _equipment = TextEditingController(
+    text: widget.job.equipmentMinor == 0
+        ? ''
+        : moneyToInput(widget.job.equipmentMinor),
+  )..addListener(_refresh);
   bool _toWallet = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _paid.addListener(_refresh);
+  }
 
   @override
   void dispose() {
     _paid.dispose();
+    _equipment.dispose();
+    _helpers.dispose();
     super.dispose();
   }
 
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  int get _leftOver =>
+      (parseMoneyOrZero(_paid.text) ?? 0) -
+      _helpers.helpers.fold<int>(0, (a, h) => a + h.payMinor) -
+      (parseMoneyOrZero(_equipment.text) ?? 0);
+
   void _finish() {
+    final t = AppLocalizations.of(context);
     if (!_form.currentState!.validate()) return;
+    final problem = _helpers.validate(t);
+    if (problem != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(problem)));
+      return;
+    }
     final paid = parseMoneyOrZero(_paid.text)!;
     final job = widget.job;
     final me = widget.me;
-    final workers = _workers.toList();
+    final helpers = _helpers.helpers;
+    final equipment = parseMoneyOrZero(_equipment.text) ?? 0;
     final toWallet = _toWallet;
     final navigator = Navigator.of(context);
     saveInBackground(
@@ -67,7 +97,8 @@ class _FinishSheetState extends State<_FinishSheet> {
         me,
         paidMinor: paid,
         toWallet: toWallet,
-        workers: workers,
+        helpers: helpers,
+        equipmentMinor: equipment,
       ),
     );
     navigator.pop();
@@ -118,12 +149,31 @@ class _FinishSheetState extends State<_FinishSheet> {
             const SizedBox(height: 6),
             Text(t.whoWorked),
             const SizedBox(height: 8),
-            WorkerChips(
-              users: widget.data.activeUsers,
-              selected: _workers,
-              onChanged: (s) => setState(() => _workers = s),
+            HelpersEditor(
+              controller: _helpers,
+              candidates: widget.data.helperCandidates,
             ),
-            const SizedBox(height: 22),
+            const SizedBox(height: 14),
+            TextFormField(
+              controller: _equipment,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: t.equipmentSpent,
+                suffixText: 'RSD',
+                prefixIcon: const Icon(Icons.cleaning_services_outlined),
+              ),
+              validator: (v) =>
+                  parseMoneyOrZero(v ?? '') == null ? t.invalidAmount : null,
+            ),
+            LeftOverLine(
+              label: widget.data.userById(widget.me)?.isAdmin ?? false
+                  ? t.leftForYou
+                  : t.leftForAdmin(widget.data.admin?.shortName ?? t.roleAdmin),
+              amount: _leftOver,
+            ),
+            const SizedBox(height: 18),
             PearlButton(
               label: t.finishJob,
               icon: Icons.check_rounded,

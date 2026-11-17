@@ -28,15 +28,22 @@ A job is one visit to a client, and it is both the booking and the earning:
 there is no second record of the money.
 
 - Date, start and optional end, client, phone (tap to call), address (tap
-  for the map), the **price-list items with quantities**, who works on it,
-  notes (such as which car).
+  for the map), the **price-list items with quantities**, notes (such as
+  which car).
+- **"Radim sam | Imam pomoć"**: with help, any number of workers, each with
+  **what they are paid** for the job; and always **what the equipment cost**
+  (chemicals, cloths…). The form shows what that leaves the admin. The
+  **profit always goes to the admin**; workers are helpers. Jobs from before
+  v1.1.0 have no helpers: anyone listed in `workers` other than whoever booked
+  it reads as a helper with no pay recorded.
 - The price is worked out from the items and the terms: the biggest discount
   whose threshold the order is **strictly above** ("iznad 6.000"), rounded to
   whole dinars, plus the travel fee below the free-travel amount when one is
   set. Anyone can type over it; "Vrati cenu po cenovniku" brings it back.
 - **booked → done or cancelled.** "Završi posao" asks what was charged
   (the agreed price unless it changed on the spot), whether it goes into the
-  wallet (on by default) and who did the work.
+  wallet (on by default), and the helpers' pay and the equipment, filled in
+  from the booking.
 - A booked job whose day has passed shows on top of the calendar as **"Nije
   završeno"** until someone finishes or cancels it.
 - A client who came without booking: a new job with **"Već završeno"**.
@@ -56,16 +63,20 @@ crew's paper list (`assets/price_list.json`, 2026-11-15) with one tap.
 
 ## Wallet and earnings
 
-- **Wallet:** one balance in dinars. Finished jobs with "U novčanik" come in
-  by themselves; anyone puts money in or records spending (what for, date,
-  who). Spending can never take the wallet below zero: the app checks it, not
+- **Wallet:** one balance in dinars. A finished job with "U novčanik" comes
+  in by itself as one line: what was charged, less the helpers' pay and the
+  equipment, which leave the wallet with it. Anyone puts money in or records
+  other spending (what for, date, who). The month card shows the admin
+  *Moja zarada*, *Dato radnicima* and *Na opremu*; a worker sees what they
+  were paid. Spending can never take the wallet below zero: the app checks it, not
   the rules, so two people spending at the same moment could still both get
   through. Entries are changed or deleted by their author or the admin.
-- **Earnings:** a month or a year: earned, jobs, average per job, costs
-  (wallet spending), what is left, money put in by hand, cancelled jobs, by
-  price-list category, by worker (each job shared equally among its workers,
-  in whole dinars), month by month for a year, and the finished jobs. Computed
-  every time, never stored.
+- **Earnings:** a month or a year: charged, jobs, average per job, given to
+  helpers, equipment, other costs (wallet spending), the admin's earnings
+  (charged − helpers − equipment − other costs), money put in by hand,
+  cancelled jobs, by price-list category, paid to each helper, month by month
+  for a year, and the finished jobs. A worker also sees what they got.
+  Computed every time, never stored.
 
 Everything is in dinars, stored as integers in para.
 
@@ -74,7 +85,7 @@ Everything is in dinars, stored as integers in para.
 | Collection | Fields |
 |---|---|
 | `users/{uid}` | `email`, `firstName`, `lastName`, `phone`, `role` (`admin`/`worker`), `disabled`, `createdAt` |
-| `jobs/{id}` | `ownerId`, `date` (yyyy-MM-dd), `start`, `end` (HH:mm or ''), `clientName`, `clientPhone`, `address`, `items` (`{itemId, categoryId, name, priceMinor, qty}`), `subtotalMinor`, `discountPercent`, `travelMinor`, `priceMinor`, `workers`, `notes`, `status` (`booked`/`done`/`cancelled`), `paidMinor`, `toWallet`, `doneBy`, `doneAt`, `rev`, `updatedBy`, `createdAt`, `updatedAt`; worker only: `pushRev`, `pushStatus` |
+| `jobs/{id}` | `ownerId`, `date` (yyyy-MM-dd), `start`, `end` (HH:mm or ''), `clientName`, `clientPhone`, `address`, `items` (`{itemId, categoryId, name, priceMinor, qty}`), `subtotalMinor`, `discountPercent`, `travelMinor`, `priceMinor`, `helpers` (`{uid, payMinor}`), `equipmentMinor`, `workers` (the helpers' uids, for v1.0.x apps), `notes`, `status` (`booked`/`done`/`cancelled`), `paidMinor`, `toWallet`, `doneBy`, `doneAt`, `rev`, `updatedBy`, `createdAt`, `updatedAt`; worker only: `pushRev`, `pushStatus` |
 | `walletEntries/{id}` | `type` (`deposit`/`withdrawal`), `amountMinor`, `description`, `date`, `userId` (who), `createdBy` (author), `updatedAt` |
 | `priceCategories/{id}` | `name`, `note`, `order`, `archived` |
 | `priceItems/{id}` | `categoryId`, `name`, `priceMinor`, `order`, `archived` |

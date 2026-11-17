@@ -7,15 +7,17 @@ const String kNoCategory = '';
 
 /// What a month or a year earned, computed from the jobs every time and never
 /// stored, so it cannot drift. A job counts on its own day, and only once
-/// it is done.
+/// it is done. The profit is the admin's: what was charged, less the
+/// helpers' pay, the equipment and the other spending.
 class Earnings {
   const Earnings._({
     required this.earnedMinor,
     required this.done,
     required this.cancelled,
     required this.byCategory,
-    required this.byWorker,
-    required this.unassignedMinor,
+    required this.byHelper,
+    required this.helpersPaidMinor,
+    required this.equipmentMinor,
     required this.depositsMinor,
     required this.spendingMinor,
     required this.byMonth,
@@ -36,8 +38,9 @@ class Earnings {
     final done = <Job>[];
     var cancelled = 0;
     final byCategory = <String, int>{};
-    final byWorker = <String, int>{};
-    var unassigned = 0;
+    final byHelper = <String, int>{};
+    var helpersPaid = 0;
+    var equipment = 0;
     final byMonth = List<int>.filled(12, 0);
     for (final j in jobs) {
       if (!inRange(j.date)) continue;
@@ -47,11 +50,11 @@ class Earnings {
       final earned = j.earnedMinor;
       byMonth[j.day.month - 1] += earned;
       _addAll(byCategory, categoryShares(j));
-      if (j.workers.isEmpty) {
-        unassigned += earned;
-      } else {
-        _addAll(byWorker, workerShares(j));
+      for (final h in j.helpers) {
+        byHelper[h.uid] = (byHelper[h.uid] ?? 0) + h.payMinor;
       }
+      helpersPaid += j.helpersPaidMinor;
+      equipment += j.equipmentMinor;
     }
     done.sort((a, b) {
       final byDay = b.date.compareTo(a.date);
@@ -74,8 +77,9 @@ class Earnings {
       done: done,
       cancelled: cancelled,
       byCategory: byCategory,
-      byWorker: byWorker,
-      unassignedMinor: unassigned,
+      byHelper: byHelper,
+      helpersPaidMinor: helpersPaid,
+      equipmentMinor: equipment,
       depositsMinor: deposits,
       spendingMinor: spending,
       byMonth: byMonth,
@@ -91,16 +95,19 @@ class Earnings {
   /// Category id → earned; [kNoCategory] for jobs without items.
   final Map<String, int> byCategory;
 
-  /// Worker uid → earned, each job shared equally among its workers.
-  final Map<String, int> byWorker;
+  /// Helper uid → what they were paid, over the finished jobs.
+  final Map<String, int> byHelper;
 
-  /// Earned by jobs nobody was put on.
-  final int unassignedMinor;
+  /// Paid to helpers, all of them together.
+  final int helpersPaidMinor;
+
+  /// Spent on equipment for the finished jobs.
+  final int equipmentMinor;
 
   /// Money put into the wallet by hand: not earnings, shown apart.
   final int depositsMinor;
 
-  /// Spending from the wallet: the costs.
+  /// Spending from the wallet by hand: the other costs.
   final int spendingMinor;
 
   /// Earned per calendar month, January first (for the year view).
@@ -109,8 +116,12 @@ class Earnings {
   int get jobCount => done.length;
   int get averageMinor => done.isEmpty ? 0 : earnedMinor ~/ done.length;
 
-  /// What is left after the costs.
-  int get netMinor => earnedMinor - spendingMinor;
+  /// The admin's profit: charged, less helpers, equipment and other costs.
+  int get adminNetMinor =>
+      earnedMinor - helpersPaidMinor - equipmentMinor - spendingMinor;
+
+  /// What one helper got.
+  int paidTo(String uid) => byHelper[uid] ?? 0;
 
   static void _addAll(Map<String, int> into, Map<String, int> add) {
     for (final e in add.entries) {
@@ -135,24 +146,6 @@ Map<String, int> categoryShares(Job j) {
     (dinars) => splitByWeight(dinars, [for (final k in keys) weights[k]!]),
   );
   return {for (var i = 0; i < keys.length; i++) keys[i]: parts[i]};
-}
-
-/// The job's earning shared equally among its workers, in whole dinars, a
-/// leftover dinar each to the first ones, so it adds up exactly.
-Map<String, int> workerShares(Job j) {
-  final n = j.workers.length;
-  if (n == 0) return const {};
-  final parts = _inDinars(j.earnedMinor, (dinars) {
-    final each = dinars ~/ n;
-    final left = dinars - each * n;
-    return [for (var i = 0; i < n; i++) each + (i < left ? 1 : 0)];
-  });
-  final shares = <String, int>{};
-  for (var i = 0; i < n; i++) {
-    final uid = j.workers[i];
-    shares[uid] = (shares[uid] ?? 0) + parts[i];
-  }
-  return shares;
 }
 
 /// Splits [minor] with [split] in whole dinars, nobody gets para; the odd

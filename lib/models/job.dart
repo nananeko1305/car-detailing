@@ -12,6 +12,23 @@ JobStatus statusFromName(String? name) => switch (name) {
   _ => JobStatus.booked,
 };
 
+/// Someone who helps on a job, and what they are paid for it.
+class JobHelper {
+  const JobHelper({required this.uid, this.payMinor = 0});
+
+  final String uid;
+  final int payMinor;
+
+  JobHelper withPay(int pay) => JobHelper(uid: uid, payMinor: pay);
+
+  factory JobHelper.fromMap(Map<String, dynamic> d) => JobHelper(
+    uid: d['uid'] as String? ?? '',
+    payMinor: (d['payMinor'] as num?)?.toInt() ?? 0,
+  );
+
+  Map<String, dynamic> toMap() => {'uid': uid, 'payMinor': payMinor};
+}
+
 /// One visit to a client, in `jobs/{id}`: the booking and, once finished,
 /// the earning. There is no separate record of the money.
 class Job {
@@ -29,7 +46,8 @@ class Job {
     this.discountPercent = 0,
     this.travelMinor = 0,
     this.priceMinor = 0,
-    this.workers = const [],
+    this.helpers = const [],
+    this.equipmentMinor = 0,
     this.notes = '',
     this.status = JobStatus.booked,
     this.paidMinor,
@@ -64,8 +82,12 @@ class Job {
   /// The agreed price, after the discount; may be typed over.
   final int priceMinor;
 
-  /// Who works on it.
-  final List<String> workers;
+  /// Who helps the admin on it, each with their pay; empty = working alone.
+  /// The profit always stays with the admin.
+  final List<JobHelper> helpers;
+
+  /// Spent on equipment and supplies for this job.
+  final int equipmentMinor;
 
   /// Anything else, such as which car it is.
   final String notes;
@@ -100,6 +122,17 @@ class Job {
   /// What the job earned: the charged amount once done, otherwise nothing.
   int get earnedMinor => isDone ? (paidMinor ?? priceMinor) : 0;
 
+  /// The helpers' uids, as the older `workers` field holds them.
+  List<String> get workers => [for (final h in helpers) h.uid];
+
+  int get helpersPaidMinor => helpers.fold(0, (a, h) => a + h.payMinor);
+
+  /// What a price leaves the admin after the helpers and the equipment.
+  int netOf(int priceMinor) => priceMinor - helpersPaidMinor - equipmentMinor;
+
+  /// What the finished job left the admin; nothing until it is done.
+  int get netMinor => isDone ? netOf(earnedMinor) : 0;
+
   /// "Ugaona garnitura × 6 · Fotelja", or the notes when there are no items.
   String get title {
     if (items.isNotEmpty) return items.map((i) => i.label).join(' · ');
@@ -115,9 +148,11 @@ class Job {
   factory Job.fromMap(String id, Map<String, dynamic> d) {
     final rawItems = d['items'];
     final rawWorkers = d['workers'];
+    final rawHelpers = d['helpers'];
+    final ownerId = d['ownerId'] as String? ?? '';
     return Job(
       id: id,
-      ownerId: d['ownerId'] as String? ?? '',
+      ownerId: ownerId,
       date: d['date'] as String? ?? '',
       start: d['start'] as String? ?? '',
       end: d['end'] as String? ?? '',
@@ -134,12 +169,20 @@ class Job {
       discountPercent: (d['discountPercent'] as num?)?.toInt() ?? 0,
       travelMinor: (d['travelMinor'] as num?)?.toInt() ?? 0,
       priceMinor: (d['priceMinor'] as num?)?.toInt() ?? 0,
-      workers: rawWorkers is List
+      // Jobs from before helpers (v1.0.x) only list `workers`: the others
+      // than whoever booked it become helpers with no pay recorded.
+      helpers: rawHelpers is List
+          ? [
+              for (final h in rawHelpers)
+                if (h is Map) JobHelper.fromMap(Map<String, dynamic>.from(h)),
+            ]
+          : rawWorkers is List
           ? [
               for (final w in rawWorkers)
-                if (w is String) w,
+                if (w is String && w != ownerId) JobHelper(uid: w),
             ]
           : const [],
+      equipmentMinor: (d['equipmentMinor'] as num?)?.toInt() ?? 0,
       notes: d['notes'] as String? ?? '',
       status: statusFromName(d['status'] as String?),
       paidMinor: (d['paidMinor'] as num?)?.toInt(),
@@ -167,6 +210,8 @@ class Job {
     'discountPercent': discountPercent,
     'travelMinor': travelMinor,
     'priceMinor': priceMinor,
+    'helpers': [for (final h in helpers) h.toMap()],
+    'equipmentMinor': equipmentMinor,
     'workers': workers,
     'notes': notes.trim(),
   };

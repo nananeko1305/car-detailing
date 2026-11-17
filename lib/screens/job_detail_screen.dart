@@ -181,13 +181,36 @@ class _Detail extends StatelessWidget {
                     money(job.priceMinor),
                     strong: !job.isDone,
                   ),
-                  if (job.isDone) ...[
+                  if (job.isDone)
                     _Row(t.charged, money(job.earnedMinor), strong: true),
+                  // Who helped for how much, the equipment, and what that
+                  // leaves the admin.
+                  for (final h in job.helpers)
+                    _Row(
+                      t.helperPay(data.nameOf(h.uid)),
+                      '− ${money(h.payMinor)}',
+                    ),
+                  if (job.equipmentMinor > 0)
+                    _Row(t.equipment, '− ${money(job.equipmentMinor)}'),
+                  if (job.helpers.isNotEmpty || job.equipmentMinor > 0)
+                    _Row(
+                      profile.isAdmin
+                          ? t.leftForYou
+                          : t.leftForAdmin(
+                              data.admin?.shortName ?? t.roleAdmin,
+                            ),
+                      money(
+                        job.netOf(
+                          job.isDone ? job.earnedMinor : job.priceMinor,
+                        ),
+                      ),
+                      strong: true,
+                    ),
+                  if (job.isDone)
                     Text(
                       job.toWallet ? t.wentIntoWallet : t.notIntoWallet,
                       style: TextStyle(fontSize: 12, color: c.muted),
                     ),
-                  ],
                 ],
               ),
             ),
@@ -214,10 +237,14 @@ class _Detail extends StatelessWidget {
               ),
             ),
           _Info(
-            icon: Icons.groups_outlined,
-            text: job.workers.isEmpty
-                ? t.nobodyAssigned
-                : job.workers.map(data.nameOf).join(', '),
+            icon: job.helpers.isEmpty
+                ? Icons.person_outline_rounded
+                : Icons.groups_outlined,
+            text: job.helpers.isEmpty
+                ? t.workingAloneShort
+                : t.helpedBy(
+                    job.helpers.map((h) => data.nameOf(h.uid)).join(', '),
+                  ),
           ),
           if (job.notes.isNotEmpty)
             _Info(icon: Icons.notes_rounded, text: job.notes),

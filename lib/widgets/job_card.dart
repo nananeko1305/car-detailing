@@ -32,9 +32,11 @@ class JobCard extends StatelessWidget {
     final locale = Localizations.localeOf(context).toLanguageTag();
     final cancelled = job.isCancelled;
     final strike = cancelled ? TextDecoration.lineThrough : null;
-    final who = job.workers.isEmpty
-        ? t.nobodyAssigned
-        : job.workers.map(data.shortNameOf).join(', ');
+    final who = job.helpers.isEmpty
+        ? t.workingAloneShort
+        : t.helpedBy(
+            job.helpers.map((h) => data.shortNameOf(h.uid)).join(', '),
+          );
     final place = [
       job.clientName,
       job.address,
@@ -106,9 +108,7 @@ class JobCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
-                        color: cancelled
-                            ? c.muted
-                            : job.workers.isEmpty
+                        color: cancelled || job.helpers.isEmpty
                             ? c.muted
                             : c.secondary,
                       ),

@@ -25,6 +25,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get address => 'Address (optional)';
 
   @override
+  String adminEarnings(String name) {
+    return '$name\'s earnings';
+  }
+
+  @override
   String get agreedPrice => 'Agreed price';
 
   @override
@@ -87,9 +92,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get byPriceList => 'By the price list';
 
   @override
-  String get byWorker => 'By worker';
-
-  @override
   String get call => 'Call';
 
   @override
@@ -136,6 +138,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get charged => 'Charged';
 
   @override
+  String chargedShort(String amount) {
+    return 'charged $amount';
+  }
+
+  @override
   String get checkUpdates => 'Check for updates';
 
   @override
@@ -165,9 +172,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copyLink => 'Copy link';
-
-  @override
-  String get costs => 'Costs';
 
   @override
   String get currentPassword => 'Current password';
@@ -246,7 +250,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get download => 'Download';
 
   @override
-  String get earned => 'Earned';
+  String get earned => 'Charged';
 
   @override
   String get edit => 'Edit';
@@ -279,6 +283,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get endTime => 'End';
+
+  @override
+  String get equipment => 'Equipment';
+
+  @override
+  String get equipmentHint => 'Chemicals, cloths… for this job';
+
+  @override
+  String equipmentShort(String amount) {
+    return 'equipment $amount';
+  }
+
+  @override
+  String get equipmentSpent => 'Spent on equipment';
 
   @override
   String get errEmailInUse => 'An account with this email already exists.';
@@ -336,10 +354,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get givenToHelpers => 'Given to helpers';
+
+  @override
   String get goBack => 'Back';
 
   @override
+  String helpedBy(String names) {
+    return 'Help: $names';
+  }
+
+  @override
+  String helperPay(String name) {
+    return 'Helper: $name';
+  }
+
+  @override
   String get history => 'History';
+
+  @override
+  String get iGot => 'My earnings';
 
   @override
   String get inWallet => 'In the wallet';
@@ -419,7 +453,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get later => 'Later';
 
   @override
-  String get left => 'Left';
+  String leftForAdmin(String name) {
+    return 'Left for $name';
+  }
+
+  @override
+  String get leftForYou => 'Left for you';
 
   @override
   String get less => 'Fewer';
@@ -444,6 +483,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get more => 'More';
+
+  @override
+  String get myEarnings => 'My earnings';
 
   @override
   String get newCategory => 'New category';
@@ -498,7 +540,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noJobsThisYear => 'No finished jobs this year.';
 
   @override
-  String get nobodyAssigned => 'Nobody assigned';
+  String get noWorkersYet =>
+      'No workers yet. The admin adds them under Workers.';
 
   @override
   String notEnoughBody(String amount) {
@@ -538,10 +581,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'OK';
 
   @override
+  String get onEquipment => 'On equipment';
+
+  @override
   String get open => 'Open';
 
   @override
+  String get otherCosts => 'Other costs';
+
+  @override
+  String otherCostsShort(String amount) {
+    return 'other costs $amount';
+  }
+
+  @override
   String get over => 'Above';
+
+  @override
+  String get paidToHelpers => 'Paid to helpers';
 
   @override
   String get password => 'Password';
@@ -553,7 +610,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordsNoMatch => 'Passwords do not match';
 
   @override
+  String get paysThem => 'Amount';
+
+  @override
   String get phone => 'Phone (optional)';
+
+  @override
+  String get pickAHelper => 'Pick who helps, or switch to “Working alone”.';
 
   @override
   String get pickStartTime => 'Pick the start time.';
@@ -743,6 +806,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get terms => 'Terms';
 
   @override
+  String toHelpersShort(String amount) {
+    return 'helpers $amount';
+  }
+
+  @override
   String get travel => 'Travel';
 
   @override
@@ -799,6 +867,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whoWorks => 'Who works on it';
 
   @override
+  String get withHelp => 'I have help';
+
+  @override
   String get withoutPriceList => 'Not from the price list';
 
   @override
@@ -807,6 +878,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workers => 'Workers';
+
+  @override
+  String get workingAlone => 'Working alone';
+
+  @override
+  String get workingAloneShort => 'Working alone';
 
   @override
   String get year => 'Year';

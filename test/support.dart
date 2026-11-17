@@ -48,6 +48,15 @@ const gone = AppUser(
   firstName: 'Nikola',
 );
 
+const helper2 = AppUser(
+  uid: 'ana',
+  email: 'ana@x.rs',
+  role: UserRole.worker,
+  disabled: false,
+  firstName: 'Ana-Marija',
+  lastName: 'Radosavljević-Petrović',
+);
+
 /// A day relative to today, as a date key.
 String dayFromToday(int offset) =>
     dateKey(DateTime.now().add(Duration(days: offset)));
@@ -71,7 +80,8 @@ Job jobOn(
   String id = 'j',
   JobStatus status = JobStatus.booked,
   List<JobItem> items = const [sofa, premium],
-  List<String> workers = const ['stefan', 'marko'],
+  List<JobHelper> helpers = const [JobHelper(uid: 'marko', payMinor: 300000)],
+  int equipmentMinor = 80000,
 }) => Job(
   id: id,
   ownerId: 'stefan',
@@ -85,7 +95,8 @@ Job jobOn(
   subtotalMinor: 1590000,
   discountPercent: 15,
   priceMinor: 1351500,
-  workers: workers,
+  helpers: helpers,
+  equipmentMinor: equipmentMinor,
   notes: 'Audi Q7 crni, BG-123-XY. Interfon ne radi, zvati.',
   status: status,
   paidMinor: status == JobStatus.done ? 1351500 : null,
@@ -98,14 +109,20 @@ Job jobOn(
 LiveData fakeData() {
   final now = DateTime.now();
   return LiveData(listen: false)
-    ..users = const [admin, worker, gone]
+    ..users = const [admin, worker, helper2, gone]
     ..jobs = [
       jobOn(dayFromToday(0), id: 'today'),
       jobOn(dayFromToday(0), id: 'today2', items: const [sofa]),
       jobOn(dayFromToday(-2), id: 'late'),
       jobOn(dayFromToday(-1), id: 'done', status: JobStatus.done),
       jobOn(dayFromToday(-1), id: 'off', status: JobStatus.cancelled),
-      jobOn(dayFromToday(-1), id: 'plain', items: const [], workers: const []),
+      jobOn(
+        dayFromToday(-1),
+        id: 'plain',
+        items: const [],
+        helpers: const [],
+        equipmentMinor: 0,
+      ),
     ]
     ..entries = [
       WalletEntry(

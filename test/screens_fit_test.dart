@@ -58,6 +58,79 @@ void main() {
       await fits(tester, WalletTab(data: fakeData(), profile: worker));
     });
 
+    testWidgets('booking with two helpers fits 360 px ($lang)', (tester) async {
+      final data = fakeData();
+      await fits(
+        tester,
+        JobFormScreen(data: data, profile: admin, day: DateTime.now()),
+        scaffold: false,
+      );
+      final withHelp = find.text(sr ? 'Imam pomoć' : 'I have help');
+      await tester.ensureVisible(withHelp);
+      await tester.tap(withHelp);
+      await tester.pumpAndSettle();
+      // Only the active workers, never the admin or someone switched off.
+      expect(find.text('Marko Jovanović-Stefanović'), findsOneWidget);
+      expect(find.text('Ana-Marija Radosavljević-Petrović'), findsOneWidget);
+      expect(find.text('Nikola'), findsNothing);
+      for (final name in [
+        'Marko Jovanović-Stefanović',
+        'Ana-Marija Radosavljević-Petrović',
+      ]) {
+        await tester.ensureVisible(find.text(name));
+        await tester.tap(find.text(name));
+        await tester.pump();
+      }
+      expect(tester.takeException(), isNull);
+      expect(find.text(sr ? 'Ostaje tebi' : 'Left for you'), findsOneWidget);
+    });
+
+    testWidgets('finishing a job with helpers fits 360 px ($lang)', (
+      tester,
+    ) async {
+      await fits(
+        tester,
+        JobDetailScreen(data: fakeData(), profile: admin, jobId: 'today'),
+        scaffold: false,
+      );
+      final finish = find.text(sr ? 'Završi posao' : 'Finish job');
+      await tester.scrollUntilVisible(
+        finish,
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(finish);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      // Prefilled from the booking: Marko's pay and the equipment.
+      expect(find.text('3000'), findsOneWidget);
+      expect(find.text('800'), findsOneWidget);
+    });
+
+    testWidgets('wallet month: the admin sees the split ($lang)', (
+      tester,
+    ) async {
+      await fits(tester, WalletTab(data: fakeData(), profile: admin));
+      expect(find.text(sr ? 'Moja zarada' : 'My earnings'), findsOneWidget);
+      expect(
+        find.text(sr ? 'Dato radnicima' : 'Given to helpers'),
+        findsOneWidget,
+      );
+      expect(find.text(sr ? 'Na opremu' : 'On equipment'), findsOneWidget);
+    });
+
+    testWidgets('wallet month: a worker sees what they got ($lang)', (
+      tester,
+    ) async {
+      await fits(tester, WalletTab(data: fakeData(), profile: worker));
+      expect(find.text(sr ? 'Moja zarada' : 'My earnings'), findsOneWidget);
+      // Not the admin's split.
+      expect(
+        find.text(sr ? 'Dato radnicima' : 'Given to helpers'),
+        findsNothing,
+      );
+    });
+
     testWidgets('earnings fit 360 px, month and year ($lang)', (tester) async {
       await fits(tester, EarningsTab(data: fakeData(), profile: worker));
       await tester.tap(find.text(sr ? 'Godina' : 'Year'));

@@ -10,6 +10,7 @@ import '../money/money.dart';
 import '../services/background_save.dart';
 import '../services/job_repository.dart';
 import '../services/live_data.dart';
+import '../widgets/helpers_editor.dart';
 import '../widgets/item_picker_sheet.dart';
 import '../widgets/job_form_parts.dart';
 import '../widgets/pearl.dart';
@@ -53,7 +54,13 @@ class _JobFormScreenState extends State<JobFormScreen> {
     text: _old == null ? '' : moneyToInput(_old.priceMinor),
   );
   late List<JobItem> _items = [...?_old?.items];
-  late Set<String> _workers = {...?_old?.workers};
+  late final _helpers = HelpersController([...?_old?.helpers])
+    ..addListener(_refresh);
+  late final _equipment = TextEditingController(
+    text: (_old?.equipmentMinor ?? 0) == 0
+        ? ''
+        : moneyToInput(_old!.equipmentMinor),
+  )..addListener(_refresh);
   late bool _chargeTravel = (_old?.travelMinor ?? 1) > 0;
   late bool _priceTyped = _old != null && _old.priceMinor != _quote.totalMinor;
   bool _alreadyDone = false;
@@ -64,10 +71,16 @@ class _JobFormScreenState extends State<JobFormScreen> {
 
   @override
   void dispose() {
-    for (final c in [_client, _phone, _address, _notes, _price]) {
+    for (final c in [_client, _phone, _address, _notes, _price, _equipment]) {
       c.dispose();
     }
+    _helpers.dispose();
     super.dispose();
+  }
+
+  /// Redraws "Ostaje tebi" as amounts are typed.
+  void _refresh() {
+    if (mounted) setState(() {});
   }
 
   /// Keeps the price on the list's figure until someone types their own.
@@ -136,6 +149,11 @@ class _JobFormScreenState extends State<JobFormScreen> {
       _snack(t.addItemOrNote);
       return;
     }
+    final helpersProblem = _helpers.validate(t);
+    if (helpersProblem != null) {
+      _snack(helpersProblem);
+      return;
+    }
     final q = _quote;
     final price = parseMoneyOrZero(_price.text)!;
     final me = widget.profile.uid;
@@ -152,7 +170,8 @@ class _JobFormScreenState extends State<JobFormScreen> {
       discountPercent: q.discountPercent,
       travelMinor: q.travelMinor,
       priceMinor: price,
-      workers: _workers.toList(),
+      helpers: _helpers.helpers,
+      equipmentMinor: parseMoneyOrZero(_equipment.text) ?? 0,
       notes: _notes.text,
       status: _alreadyDone ? JobStatus.done : JobStatus.booked,
       paidMinor: _alreadyDone ? price : null,
@@ -169,6 +188,16 @@ class _JobFormScreenState extends State<JobFormScreen> {
     }
     Navigator.of(context).pop();
   }
+
+  /// What the price leaves the admin after the helpers and the equipment.
+  int get _leftOver =>
+      (parseMoneyOrZero(_price.text) ?? 0) -
+      _helpers.helpers.fold<int>(0, (a, h) => a + h.payMinor) -
+      (parseMoneyOrZero(_equipment.text) ?? 0);
+
+  String _leftLabel(AppLocalizations t) => widget.profile.isAdmin
+      ? t.leftForYou
+      : t.leftForAdmin(widget.data.admin?.shortName ?? t.roleAdmin);
 
   void _snack(String text) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
@@ -298,11 +327,26 @@ class _JobFormScreenState extends State<JobFormScreen> {
             gap,
             Text(t.whoWorks),
             const SizedBox(height: 8),
-            WorkerChips(
-              users: widget.data.activeUsers,
-              selected: _workers,
-              onChanged: (s) => setState(() => _workers = s),
+            HelpersEditor(
+              controller: _helpers,
+              candidates: widget.data.helperCandidates,
             ),
+            gap,
+            TextFormField(
+              controller: _equipment,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: t.equipmentSpent,
+                hintText: t.equipmentHint,
+                suffixText: 'RSD',
+                prefixIcon: const Icon(Icons.cleaning_services_outlined),
+              ),
+              validator: (v) =>
+                  parseMoneyOrZero(v ?? '') == null ? t.invalidAmount : null,
+            ),
+            LeftOverLine(label: _leftLabel(t), amount: _leftOver),
             gap,
             TextFormField(
               controller: _notes,
