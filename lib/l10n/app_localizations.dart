@@ -620,6 +620,18 @@ abstract class AppLocalizations {
   /// **'Wrong email or password.'**
   String get errWrongCredentials;
 
+  /// No description provided for @finalDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Final discount'**
+  String get finalDiscount;
+
+  /// No description provided for @finalDiscountPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Final discount {percent}%'**
+  String finalDiscountPercent(int percent);
+
   /// No description provided for @finishJob.
   ///
   /// In en, this message translates to:

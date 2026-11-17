@@ -314,6 +314,14 @@ class AppLocalizationsSr extends AppLocalizations {
   String get errWrongCredentials => 'Pogrešan email ili lozinka.';
 
   @override
+  String get finalDiscount => 'Konačan popust';
+
+  @override
+  String finalDiscountPercent(int percent) {
+    return 'Konačan popust $percent%';
+  }
+
+  @override
   String get finishJob => 'Završi posao';
 
   @override

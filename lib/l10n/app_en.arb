@@ -188,6 +188,15 @@
   "errUserDisabled": "This account is switched off.",
   "errWeakPassword": "Password is too weak (min. 6 characters).",
   "errWrongCredentials": "Wrong email or password.",
+  "finalDiscount": "Final discount",
+  "finalDiscountPercent": "Final discount {percent}%",
+  "@finalDiscountPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "finishJob": "Finish job",
   "finishedBy": "Finished by {name}",
   "@finishedBy": {
