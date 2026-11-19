@@ -1,5 +1,6 @@
 import 'package:car_detailing/l10n/locale_controller.dart';
 import 'package:car_detailing/screens/calendar_tab.dart';
+import 'package:car_detailing/screens/deals_screen.dart';
 import 'package:car_detailing/screens/earnings_tab.dart';
 import 'package:car_detailing/screens/job_detail_screen.dart';
 import 'package:car_detailing/screens/job_form_screen.dart';
@@ -336,6 +337,61 @@ void main() {
         PriceListScreen(data: fakeData(), profile: admin),
         scaffold: false,
       );
+      // The terms moved to "Pogodnosti".
+      expect(find.text(sr ? 'Uslovi' : 'Terms'), findsNothing);
+    });
+
+    testWidgets('the admin edits the discounts in Pogodnosti ($lang)', (
+      tester,
+    ) async {
+      await fits(
+        tester,
+        DealsScreen(data: fakeData(), profile: admin),
+        scaffold: false,
+      );
+      final over = find.widgetWithText(TextFormField, sr ? 'Iznad' : 'Above');
+      // The crew's two discounts, then one more.
+      expect(over, findsNWidgets(2));
+      await tester.tap(find.text(sr ? 'Dodaj popust' : 'Add a discount'));
+      await tester.pump();
+      expect(over, findsNWidgets(3));
+      expect(tester.takeException(), isNull);
+      // An empty new row is not saved: it asks for its amounts.
+      final save = find.text(sr ? 'Sačuvaj' : 'Save');
+      await tester.scrollUntilVisible(
+        save,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(save);
+      await tester.pump();
+      expect(find.text(sr ? 'Od 0 do 100' : '0 to 100'), findsOneWidget);
+      expect(find.byType(DealsScreen), findsOneWidget);
+      // Removing it leaves the two.
+      await tester.scrollUntilVisible(
+        find.byIcon(Icons.close_rounded).last,
+        -200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byIcon(Icons.close_rounded).last);
+      await tester.pump();
+      expect(over, findsNWidgets(2));
+    });
+
+    testWidgets('a worker only reads Pogodnosti ($lang)', (tester) async {
+      await fits(
+        tester,
+        DealsScreen(data: fakeData(), profile: worker),
+        scaffold: false,
+      );
+      expect(find.byType(TextFormField), findsNothing);
+      expect(find.text(sr ? 'Dodaj popust' : 'Add a discount'), findsNothing);
+      expect(
+        find.text(
+          sr ? '• Popust 10% iznad 6.000 RSD' : '• 10% off above 6,000 RSD',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('workers fit 360 px ($lang)', (tester) async {
@@ -363,6 +419,14 @@ void main() {
       final signOut = find.text(sr ? 'Odjavi se' : 'Sign out');
       final share = find.text(sr ? 'Podeli aplikaciju' : 'Share the app');
       expect(signOut, findsOneWidget);
+      // The discounts have their own entry, right under the price list.
+      final priceList = find.text(sr ? 'Cenovnik' : 'Price list');
+      final deals = find.text(sr ? 'Pogodnosti' : 'Discounts');
+      expect(deals, findsOneWidget);
+      expect(
+        tester.getTopLeft(deals).dy,
+        greaterThan(tester.getTopLeft(priceList).dy),
+      );
       // At the bottom of the menu, below everything else.
       expect(
         tester.getTopLeft(signOut).dy,

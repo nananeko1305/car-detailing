@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/app_user.dart';
+import '../screens/deals_screen.dart';
 import '../screens/price_list_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/share_app_screen.dart';
@@ -12,8 +13,8 @@ import '../theme/app_colors.dart';
 import 'app_logo.dart';
 import 'pearl.dart';
 
-/// The side menu: price list, the crew, settings, sharing the app, and at
-/// the very bottom, in red, signing out.
+/// The side menu: price list, discounts ("Pogodnosti"), the crew, settings,
+/// sharing the app, and at the very bottom, in red, signing out.
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key, required this.data, required this.profile});
 
@@ -68,6 +69,11 @@ class AppDrawer extends StatelessWidget {
                     icon: Icons.sell_outlined,
                     label: t.priceList,
                     onTap: () => open(PriceListScreen(data: data, profile: me)),
+                  ),
+                  _Item(
+                    icon: Icons.percent_rounded,
+                    label: t.deals,
+                    onTap: () => open(DealsScreen(data: data, profile: me)),
                   ),
                   _Item(
                     icon: Icons.groups_outlined,

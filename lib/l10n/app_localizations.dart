@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'Add'**
   String get add;
 
+  /// No description provided for @addDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a discount'**
+  String get addDiscount;
+
   /// No description provided for @addFromPriceList.
   ///
   /// In en, this message translates to:
@@ -379,6 +385,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Date'**
   String get date;
+
+  /// No description provided for @deals.
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts'**
+  String get deals;
+
+  /// No description provided for @dealsDiscounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts by order size'**
+  String get dealsDiscounts;
+
+  /// No description provided for @dealsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The biggest discount whose amount the order is above applies. New bookings are priced by these; booked jobs keep theirs.'**
+  String get dealsHint;
 
   /// No description provided for @delete.
   ///
@@ -1115,7 +1139,7 @@ abstract class AppLocalizations {
   /// No description provided for @priceListAdminHint.
   ///
   /// In en, this message translates to:
-  /// **'Tap an item to change it, hold it to put it away. Tap the terms to change them.'**
+  /// **'Tap an item to change it, hold it to put it away.'**
   String get priceListAdminHint;
 
   /// No description provided for @priceListEmpty.
@@ -1405,12 +1429,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wallet'**
   String get tabWallet;
-
-  /// No description provided for @terms.
-  ///
-  /// In en, this message translates to:
-  /// **'Terms'**
-  String get terms;
 
   /// No description provided for @toHelpersShort.
   ///

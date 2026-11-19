@@ -69,11 +69,16 @@ there is no second record of the money.
 ## Price list
 
 Categories, each with items and a note (what is included, which cars count as
-small, medium, large or SUV), plus the terms in `meta/pricing`. Everyone reads
-it; only the admin edits it. Items and categories are put away (archived),
-never deleted. A job copies the items it was booked with, so a later price
-change never rewrites an old job. On a fresh database the admin loads the
-crew's paper list (`assets/price_list.json`, 2026-11-15) with one tap.
+small, medium, large or SUV). Everyone reads it; only the admin edits it.
+Items and categories are put away (archived), never deleted. A job copies the
+items it was booked with, so a later price change never rewrites an old job.
+On a fresh database the admin loads the crew's paper list
+(`assets/price_list.json`, 2026-11-15) with one tap.
+
+The terms (`meta/pricing`) have their own entry in the side menu,
+**"Pogodnosti"**: any number of discounts by order size (the rules allow 20;
+a 0% row is left out) and the travel terms. The admin edits them there; a
+worker reads them. They price new bookings; booked jobs keep theirs.
 
 ## Wallet and earnings
 

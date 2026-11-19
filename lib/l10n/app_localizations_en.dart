@@ -13,6 +13,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get add => 'Add';
 
   @override
+  String get addDiscount => 'Add a discount';
+
+  @override
   String get addFromPriceList => 'Add from the price list';
 
   @override
@@ -173,6 +176,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get date => 'Date';
+
+  @override
+  String get deals => 'Discounts';
+
+  @override
+  String get dealsDiscounts => 'Discounts by order size';
+
+  @override
+  String get dealsHint =>
+      'The biggest discount whose amount the order is above applies. New bookings are priced by these; booked jobs keep theirs.';
 
   @override
   String get delete => 'Delete';
@@ -610,7 +623,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priceListAdminHint =>
-      'Tap an item to change it, hold it to put it away. Tap the terms to change them.';
+      'Tap an item to change it, hold it to put it away.';
 
   @override
   String get priceListEmpty => 'The price list is empty. The admin sets it up.';
@@ -771,9 +784,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tabWallet => 'Wallet';
-
-  @override
-  String get terms => 'Terms';
 
   @override
   String toHelpersShort(String amount) {
