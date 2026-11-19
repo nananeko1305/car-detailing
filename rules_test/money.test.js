@@ -8,38 +8,50 @@ import { as, entry, seed, seedCrew } from './setup.js';
 const seedEntry = (id, uid) => seed(`walletEntries/${id}`, { ...entry(uid), updatedAt: new Date() });
 
 describe('wallet', () => {
-  test('anyone active adds an entry, as its author, for any user', async () => {
+  // Since v1.2.0 the wallet is the admin's alone.
+  test('the admin adds an entry, as its author, for any user', async () => {
     await seedCrew();
-    const add = (id, uid, changes) => setDoc(doc(as(uid), `walletEntries/${id}`), entry(uid, changes));
-    await assertSucceeds(add('a', 'ana'));
-    await assertSucceeds(add('b', 'ana', { type: 'withdrawal', userId: 'bob' }));
-    await assertSucceeds(getDocs(collection(as('bob'), 'walletEntries')));
-    await assertFails(setDoc(doc(as('ana'), 'walletEntries/c'), entry('bob')));
-    await assertFails(add('d', 'ana', { amountMinor: 0 }));
-    await assertFails(add('e', 'ana', { amountMinor: -100 }));
-    await assertFails(add('f', 'ana', { type: 'gift' }));
-    await assertFails(add('g', 'ana', { userId: 'nobody' }));
-    await assertFails(add('h', 'ana', { date: '2026-11-15' }));
-    await assertFails(add('i', 'ana', { currency: 'RSD' }));
+    const add = (id, changes) => setDoc(doc(as('boss'), `walletEntries/${id}`), entry('boss', changes));
+    await assertSucceeds(add('a'));
+    await assertSucceeds(add('b', { type: 'withdrawal', userId: 'bob' }));
+    await assertSucceeds(getDocs(collection(as('boss'), 'walletEntries')));
+    await assertFails(setDoc(doc(as('boss'), 'walletEntries/c'), entry('bob')));
+    await assertFails(add('d', { amountMinor: 0 }));
+    await assertFails(add('e', { amountMinor: -100 }));
+    await assertFails(add('f', { type: 'gift' }));
+    await assertFails(add('g', { userId: 'nobody' }));
+    await assertFails(add('h', { date: '2026-11-15' }));
+    await assertFails(add('i', { currency: 'RSD' }));
   });
 
-  test('only the author or the admin changes or deletes it', async () => {
+  test('a worker neither reads nor writes it', async () => {
     await seedCrew();
+    await seedEntry('w1', 'boss');
+    await assertFails(getDocs(collection(as('ana'), 'walletEntries')));
+    await assertFails(getDoc(doc(as('ana'), 'walletEntries/w1')));
+    await assertFails(setDoc(doc(as('ana'), 'walletEntries/a'), entry('ana')));
+    await assertFails(
+      setDoc(doc(as('ana'), 'walletEntries/b'), entry('ana', { type: 'withdrawal' })),
+    );
+  });
+
+  test('the admin changes or deletes any entry; its author stays', async () => {
+    await seedCrew();
+    // w1 was written by a worker before v1.2.0.
     await seedEntry('w1', 'ana');
-    await seedEntry('w2', 'ana');
+    await seedEntry('w2', 'boss');
     const change = (uid, changes = {}) =>
       updateDoc(doc(as(uid), 'walletEntries/w1'), {
         description: 'Ispravka',
         updatedAt: serverTimestamp(),
         ...changes,
       });
+    await assertFails(change('ana'));
+    await assertFails(deleteDoc(doc(as('ana'), 'walletEntries/w1')));
     await assertFails(change('bob'));
-    await assertFails(deleteDoc(doc(as('bob'), 'walletEntries/w1')));
-    await assertSucceeds(change('ana'));
     await assertSucceeds(change('boss', { amountMinor: 900000 }));
-    await assertFails(change('ana', { createdBy: 'bob' }));
     await assertFails(change('boss', { createdBy: 'boss' }));
-    await assertSucceeds(deleteDoc(doc(as('ana'), 'walletEntries/w1')));
+    await assertSucceeds(deleteDoc(doc(as('boss'), 'walletEntries/w1')));
     await assertSucceeds(deleteDoc(doc(as('boss'), 'walletEntries/w2')));
   });
 });

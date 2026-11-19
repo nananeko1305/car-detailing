@@ -10,9 +10,9 @@ import '../theme/app_colors.dart';
 import 'helpers_editor.dart';
 import 'pearl.dart';
 
-/// "Završi posao": what was charged (the agreed price unless it changed on
-/// the spot), whether it goes into the wallet, and who helped for how much,
-/// as booked unless it turned out otherwise.
+/// "Završi posao", the admin only: what was charged (the agreed price unless
+/// it changed on the spot), whether it goes into the wallet, and who helped
+/// for how much, as booked unless it turned out otherwise.
 Future<void> showFinishJobSheet(
   BuildContext context, {
   required LiveData data,
@@ -144,12 +144,7 @@ class _FinishSheetState extends State<_FinishSheet> {
               controller: _helpers,
               candidates: widget.data.helperCandidates,
             ),
-            LeftOverLine(
-              label: widget.data.userById(widget.me)?.isAdmin ?? false
-                  ? t.leftForYou
-                  : t.leftForAdmin(widget.data.admin?.shortName ?? t.roleAdmin),
-              amount: _leftOver,
-            ),
+            LeftOverLine(label: t.leftForYou, amount: _leftOver),
             const SizedBox(height: 18),
             PearlButton(
               label: t.finishJob,

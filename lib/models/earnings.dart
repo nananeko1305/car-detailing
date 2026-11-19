@@ -29,10 +29,7 @@ class Earnings {
     required DateTime from,
     required DateTime to,
   }) {
-    final fromKey = dateKey(from);
-    final toKey = dateKey(to);
-    bool inRange(String key) =>
-        key.compareTo(fromKey) >= 0 && key.compareTo(toKey) < 0;
+    final inRange = _within(from, to);
 
     final done = <Job>[];
     var cancelled = 0;
@@ -53,10 +50,7 @@ class Earnings {
       }
       helpersPaid += j.helpersPaidMinor;
     }
-    done.sort((a, b) {
-      final byDay = b.date.compareTo(a.date);
-      return byDay != 0 ? byDay : b.start.compareTo(a.start);
-    });
+    done.sort(_newestFirst);
 
     var deposits = 0;
     var spending = 0;
@@ -112,14 +106,70 @@ class Earnings {
   /// The admin's profit: charged, less the helpers and the spending.
   int get adminNetMinor => earnedMinor - helpersPaidMinor - spendingMinor;
 
-  /// What one helper got.
-  int paidTo(String uid) => byHelper[uid] ?? 0;
-
   static void _addAll(Map<String, int> into, Map<String, int> add) {
     for (final e in add.entries) {
       into[e.key] = (into[e.key] ?? 0) + e.value;
     }
   }
+}
+
+/// What one helper was paid over a period, from the finished jobs they
+/// helped on: all a worker sees of the earnings. Computed like [Earnings].
+class HelperEarnings {
+  const HelperEarnings._({
+    required this.jobs,
+    required this.paidMinor,
+    required this.byMonth,
+  });
+
+  /// [uid]'s pay from the first day of [from] up to, not including, [to].
+  factory HelperEarnings.of({
+    required List<Job> jobs,
+    required String uid,
+    required DateTime from,
+    required DateTime to,
+  }) {
+    final inRange = _within(from, to);
+    final mine = <Job>[];
+    var paid = 0;
+    final byMonth = List<int>.filled(12, 0);
+    for (final j in jobs) {
+      if (!j.isDone || !inRange(j.date)) continue;
+      final pay = [
+        for (final h in j.helpers)
+          if (h.uid == uid) h.payMinor,
+      ];
+      if (pay.isEmpty) continue;
+      final total = pay.fold(0, (a, v) => a + v);
+      mine.add(j);
+      paid += total;
+      byMonth[j.day.month - 1] += total;
+    }
+    mine.sort(_newestFirst);
+    return HelperEarnings._(jobs: mine, paidMinor: paid, byMonth: byMonth);
+  }
+
+  /// The finished jobs they helped on, newest first.
+  final List<Job> jobs;
+  final int paidMinor;
+
+  /// Paid per calendar month, January first (for the year view).
+  final List<int> byMonth;
+
+  int get averageMinor => jobs.isEmpty ? 0 : paidMinor ~/ jobs.length;
+}
+
+/// Whether a `yyyy-MM-dd` key falls from [from] up to, not including, [to].
+bool Function(String key) _within(DateTime from, DateTime to) {
+  final fromKey = dateKey(from);
+  final toKey = dateKey(to);
+  return (key) => key.compareTo(fromKey) >= 0 && key.compareTo(toKey) < 0;
+}
+
+/// Newest day first; on the same day, the later start first.
+int _newestFirst(Job a, Job b) {
+  final byDay = b.date.compareTo(a.date);
+  return byDay != 0 ? byDay : b.start.compareTo(a.start);
 }
 
 /// The job's earning spread over its items' categories in proportion to

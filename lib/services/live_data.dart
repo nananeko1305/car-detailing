@@ -15,12 +15,19 @@ import 'wallet_repository.dart';
 /// Live snapshot of the crew, its jobs, wallet and price list. One instance
 /// per signed-in session, owned by the home screen; every tab reads from it
 /// instead of opening its own Firestore listeners.
+///
+/// Only the admin may read the wallet: for a worker ([wallet] false) the
+/// entries are empty from the start and never listened to, since the rules
+/// would refuse the listener and it would retry forever.
 class LiveData extends ChangeNotifier {
-  LiveData({bool listen = true}) {
+  LiveData({bool listen = true, bool wallet = true}) {
+    if (!wallet) entries = const [];
     if (!listen) return;
     _watch(UserRepository.instance.watchAll, (v) => users = v);
     _watch(JobRepository.instance.watchAll, (v) => jobs = v);
-    _watch(WalletRepository.instance.watchAll, (v) => entries = v);
+    if (wallet) {
+      _watch(WalletRepository.instance.watchAll, (v) => entries = v);
+    }
     final prices = PriceListRepository.instance;
     _watch(prices.watchCategories, (v) => categories = v);
     _watch(prices.watchItems, (v) => items = v);
@@ -67,14 +74,6 @@ class LiveData extends ChangeNotifier {
     for (final u in users ?? const <AppUser>[])
       if (!u.disabled) u,
   ];
-
-  /// The admin, to whom every job's profit goes; null until users load.
-  AppUser? get admin {
-    for (final u in users ?? const <AppUser>[]) {
-      if (u.isAdmin) return u;
-    }
-    return null;
-  }
 
   /// Who can help on a job: the active accounts other than the admin.
   List<AppUser> get helperCandidates => [

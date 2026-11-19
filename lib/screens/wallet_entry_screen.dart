@@ -35,8 +35,8 @@ class WalletEntryScreen extends StatefulWidget {
 class _WalletEntryScreenState extends State<WalletEntryScreen> {
   final _form = GlobalKey<FormState>();
   late final WalletEntry? _old = widget.entry;
-  late final bool _canEdit =
-      _old == null || widget.profile.canDelete(_old.createdBy);
+  // Only the admin reaches the wallet; the check stays as a guard.
+  late final bool _canEdit = widget.profile.isAdmin;
   late final bool _spending = widget.type == WalletEntryType.withdrawal;
   late DateTime _date = _old?.date ?? DateUtils.dateOnly(DateTime.now());
   late String _userId = _old?.userId ?? widget.profile.uid;

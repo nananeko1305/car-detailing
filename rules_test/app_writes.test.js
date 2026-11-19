@@ -31,19 +31,20 @@ describe('the app as written', () => {
     await seedCrew();
     await seedJob('j1', 'boss', { rev: 1 });
     await assertSucceeds(
-      write('ana', {
+      write('boss', {
         status: 'done',
         paidMinor: 2700000,
         toWallet: true,
         workers: ['ana', 'bob'],
-        doneBy: 'ana',
+        doneBy: 'boss',
         doneAt: serverTimestamp(),
       }),
     );
     await assertSucceeds(
-      write('bob', { status: 'booked', paidMinor: null, doneBy: '', doneAt: null }),
+      write('boss', { status: 'booked', paidMinor: null, doneBy: '', doneAt: null }),
     );
-    await assertSucceeds(write('ana', { status: 'cancelled' }));
+    await assertSucceeds(write('boss', { status: 'cancelled' }));
+    await assertFails(write('ana', { status: 'booked' }));
     await assertFails(write('gone', { status: 'booked' }));
   });
 
@@ -51,12 +52,12 @@ describe('the app as written', () => {
     await seedCrew();
     await assertSucceeds(
       setDoc(
-        doc(as('ana'), 'jobs/walkin'),
-        job('ana', {
+        doc(as('boss'), 'jobs/walkin'),
+        job('boss', {
           status: 'done',
           paidMinor: 550000,
           toWallet: true,
-          doneBy: 'ana',
+          doneBy: 'boss',
           doneAt: Timestamp.fromDate(new Date()),
         }),
       ),

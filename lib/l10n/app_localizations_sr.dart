@@ -25,11 +25,6 @@ class AppLocalizationsSr extends AppLocalizations {
   String get address => 'Adresa (nije obavezno)';
 
   @override
-  String adminEarnings(String name) {
-    return 'Zarada: $name';
-  }
-
-  @override
   String get agreedPrice => 'Dogovorena cena';
 
   @override
@@ -447,11 +442,6 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get later => 'Kasnije';
-
-  @override
-  String leftForAdmin(String name) {
-    return '$name dobija';
-  }
 
   @override
   String get leftForYou => 'Ostaje tebi';

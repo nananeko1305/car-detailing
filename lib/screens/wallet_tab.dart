@@ -107,7 +107,7 @@ class WalletTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        WalletMonthCard(data: data, profile: profile),
+        WalletMonthCard(data: data),
         const SizedBox(height: 18),
         Text(t.history, style: c.display(17)),
         const SizedBox(height: 8),

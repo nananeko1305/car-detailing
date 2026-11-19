@@ -25,11 +25,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get address => 'Address (optional)';
 
   @override
-  String adminEarnings(String name) {
-    return '$name\'s earnings';
-  }
-
-  @override
   String get agreedPrice => 'Agreed price';
 
   @override
@@ -442,11 +437,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get later => 'Later';
-
-  @override
-  String leftForAdmin(String name) {
-    return 'Left for $name';
-  }
 
   @override
   String get leftForYou => 'Left for you';

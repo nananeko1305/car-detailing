@@ -5,14 +5,6 @@
   "addItemOrNote": "Add an item from the price list, or a note.",
   "addWorker": "Add worker",
   "address": "Address (optional)",
-  "adminEarnings": "{name}'s earnings",
-  "@adminEarnings": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "agreedPrice": "Agreed price",
   "alreadyDone": "Already done",
   "alreadyDoneHint": "A client who came without booking",
@@ -279,14 +271,6 @@
   "languagePhone": "Phone language",
   "lastName": "Last name (optional)",
   "later": "Later",
-  "leftForAdmin": "Left for {name}",
-  "@leftForAdmin": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "leftForYou": "Left for you",
   "less": "Fewer",
   "licenses": "Licenses",

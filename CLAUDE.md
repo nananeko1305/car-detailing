@@ -65,6 +65,10 @@ accounts resets all state below it.
   it down as `data`. It listens to whole collections and resubscribes with
   backoff, because a Firestore listener that errors never recovers. Filtering
   happens on the client, which is why `firestore.indexes.json` is empty.
+  A worker's `LiveData(wallet: false)` never listens to `walletEntries`: the
+  rules refuse it, and the listener would retry forever.
+- **Two roles: the admin does, a worker looks.** Gate every action and every
+  admin-only figure on `profile.isAdmin`; the rules are the real boundary.
 - **Writes go through `saveInBackground`; do not await a Firestore write in
   UI.** The future does not complete offline. The exceptions are the admin
   claim and adding a worker, whose screens wait for the result.
@@ -93,8 +97,8 @@ accounts resets all state below it.
 
 | Records | Create | Change | Delete |
 |---|---|---|---|
-| jobs | any active user, as author | any active user | author or admin |
-| walletEntries | any active user | author or admin | author or admin |
+| jobs (read: any active user) | admin, as author | admin | admin |
+| walletEntries (read: admin) | admin, as author | admin (author kept) | admin |
 | priceCategories, priceItems, meta/pricing | admin | admin | nobody (archive) |
 | users | admin (workers), plus the one-time admin claim | self (name, phone); admin (others' name, phone, `disabled`) | nobody |
 

@@ -82,8 +82,6 @@ void main() {
     test('helpers get what they were paid, the admin the rest', () {
       expect(nov.helpersPaidMinor, 400000);
       expect(nov.byHelper, {'a': 250000, 'b': 150000});
-      expect(nov.paidTo('a'), 250000);
-      expect(nov.paidTo('nobody'), 0);
       // Charged, less the helpers and the spending (equipment included).
       expect(nov.adminNetMinor, 1668000 - 400000 - 120000);
     });
@@ -98,6 +96,69 @@ void main() {
       expect(y.byMonth[9], 100000);
       expect(y.byMonth[10], nov.earnedMinor);
       expect(y.jobCount, 4);
+    });
+  });
+
+  group('a helper sees only their own pay', () {
+    final jobs = [
+      job(
+        '2026-11-03',
+        helpers: const [
+          JobHelper(uid: 'a', payMinor: 100000),
+          JobHelper(uid: 'b', payMinor: 50000),
+        ],
+      ),
+      job('2026-11-16', helpers: const [JobHelper(uid: 'a', payMinor: 150000)]),
+      job('2026-11-20', helpers: const [JobHelper(uid: 'b', payMinor: 90000)]),
+      // Booked or cancelled: nothing paid yet, or ever.
+      job(
+        '2026-11-21',
+        status: JobStatus.booked,
+        helpers: const [JobHelper(uid: 'a', payMinor: 70000)],
+      ),
+      job(
+        '2026-11-22',
+        status: JobStatus.cancelled,
+        helpers: const [JobHelper(uid: 'a', payMinor: 70000)],
+      ),
+      job('2026-10-30', helpers: const [JobHelper(uid: 'a', payMinor: 40000)]),
+      job('2026-11-25'),
+    ];
+
+    test('a month: their finished jobs, newest first, and what they got', () {
+      final a = HelperEarnings.of(
+        jobs: jobs,
+        uid: 'a',
+        from: DateTime(2026, 11),
+        to: DateTime(2026, 12),
+      );
+      expect(a.paidMinor, 250000);
+      expect(a.jobs.map((j) => j.date), ['2026-11-16', '2026-11-03']);
+      expect(a.averageMinor, 125000);
+    });
+
+    test('a year, month by month', () {
+      final a = HelperEarnings.of(
+        jobs: jobs,
+        uid: 'a',
+        from: DateTime(2026),
+        to: DateTime(2027),
+      );
+      expect(a.byMonth[9], 40000);
+      expect(a.byMonth[10], 250000);
+      expect(a.paidMinor, 290000);
+    });
+
+    test('someone who helped on nothing got nothing', () {
+      final c = HelperEarnings.of(
+        jobs: jobs,
+        uid: 'c',
+        from: DateTime(2026),
+        to: DateTime(2027),
+      );
+      expect(c.paidMinor, 0);
+      expect(c.jobs, isEmpty);
+      expect(c.averageMinor, 0);
     });
   });
 

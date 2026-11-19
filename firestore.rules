@@ -149,12 +149,14 @@ service cloud.firestore {
         && d.updatedAt == request.time;
     }
 
+    // Everyone active sees the calendar; only the admin books, changes,
+    // finishes, cancels or deletes a job (v1.2.0). Workers only look.
     match /jobs/{id} {
       allow read: if isActive();
 
-      // Anyone active books a job, as themselves; a job done on the spot may
-      // be entered as done.
-      allow create: if isActive()
+      // The admin books a job, as themselves; a job done on the spot may be
+      // entered as done.
+      allow create: if isAdmin()
         && data().keys().hasOnly(jobKeys())
         && data().keys().hasAll(requiredJobKeys())
         && validJob(data())
@@ -163,17 +165,16 @@ service cloud.firestore {
         && data().rev == 1
         && data().createdAt == request.time;
 
-      // Anyone active edits, finishes or cancels any job. `rev` counts up by
-      // exactly one, which is what makes the worker tell the crew.
-      allow update: if isActive()
+      // The admin edits, finishes or cancels it. `rev` counts up by exactly
+      // one, which is what makes the push worker tell the crew.
+      allow update: if isAdmin()
         && data().keys().hasOnly(jobKeys().concat(['pushRev', 'pushStatus']))
         && validJob(data())
         && !affected().hasAny(['ownerId', 'createdAt', 'pushRev', 'pushStatus'])
         && data().rev == resource.data.get('rev', 1) + 1;
 
-      // A job entered by mistake: its author, or the admin.
-      allow delete: if isActive()
-        && (resource.data.ownerId == request.auth.uid || isAdmin());
+      // A job entered by mistake.
+      allow delete: if isAdmin();
     }
 
     function entryKeys() {
@@ -190,19 +191,17 @@ service cloud.firestore {
         && d.updatedAt == request.time;
     }
 
-    // The crew's shared wallet: anyone active adds; only the author or the
-    // admin changes or deletes, and nobody reassigns the author.
+    // The wallet is the admin's alone (v1.2.0): workers neither see nor
+    // write it. Nobody reassigns an entry's author.
     match /walletEntries/{id} {
-      allow read: if isActive();
-      allow create: if isActive()
+      allow read: if isAdmin();
+      allow create: if isAdmin()
         && validEntry(data())
         && data().createdBy == request.auth.uid;
-      allow update: if isActive()
-        && (resource.data.createdBy == request.auth.uid || isAdmin())
+      allow update: if isAdmin()
         && validEntry(data())
         && data().createdBy == resource.data.createdBy;
-      allow delete: if isActive()
-        && (resource.data.createdBy == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
     // The price list: the admin writes it, everyone active reads it. Nothing

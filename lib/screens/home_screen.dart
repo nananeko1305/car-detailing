@@ -35,7 +35,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final LiveData _data = LiveData();
+  // A worker has no wallet: no tab, no listener, no "Novi termin".
+  late final bool _admin = widget.profile.isAdmin;
+  late final LiveData _data = LiveData(wallet: _admin);
   int _tab = 0;
   DateTime _day = dayOf(DateTime.now());
   bool _updateDialogOpen = false;
@@ -119,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final profile = widget.profile;
-    final titles = [null, t.tabWallet, t.tabEarnings];
+    final titles = [null, if (_admin) t.tabWallet, t.tabEarnings];
     return Scaffold(
       drawer: AppDrawer(data: _data, profile: profile),
       appBar: AppBar(
@@ -149,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     selected: _day,
                     onSelect: (d) => setState(() => _day = d),
                   ),
-                  WalletTab(data: _data, profile: profile),
+                  if (_admin) WalletTab(data: _data, profile: profile),
                   EarningsTab(data: _data, profile: profile),
                 ],
               ),
@@ -158,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SyncBanner(),
         ],
       ),
-      floatingActionButton: _tab == 0
+      floatingActionButton: _tab == 0 && _admin
           ? PearlFab(
               label: t.newJob,
               icon: Icons.add_rounded,
@@ -167,6 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
           : null,
       bottomNavigationBar: BottomNav(
         index: _tab,
+        wallet: _admin,
         onSelect: (i) => setState(() => _tab = i),
       ),
     );

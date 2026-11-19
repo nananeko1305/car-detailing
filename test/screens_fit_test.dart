@@ -8,7 +8,9 @@ import 'package:car_detailing/screens/wallet_tab.dart';
 import 'package:car_detailing/screens/welcome_screen.dart';
 import 'package:car_detailing/screens/workers_screen.dart';
 import 'package:car_detailing/widgets/app_drawer.dart';
+import 'package:car_detailing/widgets/bottom_nav.dart';
 import 'package:car_detailing/models/day_key.dart';
+import 'package:car_detailing/models/job.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -109,6 +111,80 @@ void main() {
       expect(find.textContaining(sr ? 'oprem' : 'quipment'), findsNothing);
     });
 
+    testWidgets(
+      'a worker only looks at a job, and sees only their pay ($lang)',
+      (tester) async {
+        final data = fakeData()
+          ..jobs = [
+            for (final (id, status) in [
+              ('b', JobStatus.booked),
+              ('d', JobStatus.done),
+            ])
+              jobOn(
+                dayFromToday(0),
+                id: id,
+                status: status,
+                helpers: const [
+                  JobHelper(uid: 'marko', payMinor: 300000),
+                  JobHelper(uid: 'ana', payMinor: 250000),
+                ],
+              ),
+          ];
+        for (final id in ['b', 'd']) {
+          await fits(
+            tester,
+            JobDetailScreen(
+              key: ValueKey(id),
+              data: data,
+              profile: worker,
+              jobId: id,
+            ),
+            scaffold: false,
+          );
+          // The client's price, and their own pay; nobody else's, nothing
+          // of what the admin keeps or of the wallet.
+          expect(
+            find.text(sr ? 'Dogovorena cena' : 'Agreed price'),
+            findsOneWidget,
+          );
+          expect(find.text(sr ? 'Moja zarada' : 'My earnings'), findsOneWidget);
+          expect(
+            find.textContaining(sr ? 'Pomoćnik:' : 'Helper:'),
+            findsNothing,
+          );
+          expect(find.text(sr ? 'Ostaje tebi' : 'Left for you'), findsNothing);
+          expect(find.textContaining(sr ? 'novčanik' : 'wallet'), findsNothing);
+          // No way to change it, down to the bottom of the screen.
+          expect(find.byIcon(Icons.edit_outlined), findsNothing);
+          expect(find.byIcon(Icons.delete_outline_rounded), findsNothing);
+          await tester.drag(
+            find.byType(Scrollable).first,
+            const Offset(0, -800),
+          );
+          await tester.pump();
+          for (final label
+              in sr
+                  ? ['Završi posao', 'Otkaži termin', 'Vrati u zakazano']
+                  : ['Finish job', 'Cancel booking', 'Back to booked']) {
+            expect(find.text(label), findsNothing);
+          }
+        }
+      },
+    );
+
+    testWidgets('the admin sees every helper and what is left ($lang)', (
+      tester,
+    ) async {
+      await fits(
+        tester,
+        JobDetailScreen(data: fakeData(), profile: admin, jobId: 'today'),
+        scaffold: false,
+      );
+      expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+      expect(find.textContaining(sr ? 'Pomoćnik:' : 'Helper:'), findsOneWidget);
+      expect(find.text(sr ? 'Ostaje tebi' : 'Left for you'), findsOneWidget);
+    });
+
     testWidgets('a final discount shows on the job ($lang)', (tester) async {
       final data = fakeData()
         ..jobs = [jobOn(dayFromToday(0), id: 'fd', finalDiscountPercent: 10)];
@@ -135,16 +211,29 @@ void main() {
       expect(find.text(sr ? 'Troškovi' : 'Costs'), findsOneWidget);
     });
 
-    testWidgets('wallet month: a worker sees what they got ($lang)', (
+    testWidgets('a worker has no wallet tab ($lang)', (tester) async {
+      await fits(tester, BottomNav(index: 0, onSelect: (_) {}, wallet: false));
+      expect(find.text(sr ? 'Kalendar' : 'Calendar'), findsOneWidget);
+      expect(find.text(sr ? 'Zarada' : 'Earnings'), findsOneWidget);
+      expect(find.text(sr ? 'Novčanik' : 'Wallet'), findsNothing);
+    });
+
+    testWidgets('a worker sees only their own earnings ($lang)', (
       tester,
     ) async {
-      await fits(tester, WalletTab(data: fakeData(), profile: worker));
+      await fits(tester, EarningsTab(data: fakeData(), profile: worker));
       expect(find.text(sr ? 'Moja zarada' : 'My earnings'), findsOneWidget);
-      // Not the admin's split.
-      expect(
-        find.text(sr ? 'Dato radnicima' : 'Given to helpers'),
-        findsNothing,
-      );
+      for (final label
+          in sr
+              ? [
+                  'Naplaćeno',
+                  'Dato radnicima',
+                  'Troškovi',
+                  'Isplaćeno radnicima',
+                ]
+              : ['Charged', 'Given to helpers', 'Costs', 'Paid to helpers']) {
+        expect(find.text(label), findsNothing);
+      }
     });
 
     testWidgets('earnings fit 360 px, month and year ($lang)', (tester) async {
