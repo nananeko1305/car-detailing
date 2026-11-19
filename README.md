@@ -20,7 +20,17 @@ There is no public registration.
    password) and can switch them off and back on. A switched-off worker
    cannot sign in; their jobs keep their name. Accounts are never deleted.
 
-Everyone sees everything: calendar, wallet and earnings.
+Two roles (since v1.2.0):
+
+- **The admin** books, changes, finishes, cancels and deletes jobs, gives
+  the final discount, keeps the wallet and sees all the earnings.
+- **A worker only looks:** the calendar and each job (the client's price
+  and their own pay; not other helpers' pay or what the admin keeps), and
+  in Earnings only what they were paid. No wallet tab, no "Novi termin".
+
+The rules enforce both. One limit: a job is one document, so a worker who
+reads it could see the other helpers' pay outside the app; the wallet's
+entries are the admin's alone.
 
 ## Jobs
 
@@ -43,8 +53,8 @@ there is no second record of the money.
   whole dinars, plus the travel fee below the free-travel amount when one is
   set. On top of that, a **"Konačan popust"** in whole percent comes off the
   whole (items, discount and travel), rounded to whole dinars; typing it
-  sets the agreed price again. Anyone can type over the price; "Vrati cenu
-  po cenovniku" brings it back.
+  sets the agreed price again. The price can be typed over; "Vrati cenu po
+  cenovniku" brings it back.
 - **booked → done or cancelled.** "Završi posao" asks what was charged
   (the agreed price unless it changed on the spot), whether it goes into the
   wallet (on by default), and the helpers' pay, filled in from the booking.
@@ -52,9 +62,9 @@ there is no second record of the money.
   završeno"** until someone finishes or cancels it.
 - A client who came without booking: a new job with **"Već završeno"**.
 - Cancelled jobs stay in the history, struck through, out of the earnings.
-  "Vrati u zakazano" undoes done or cancelled. Delete is for mistakes, by the
-  author or the admin, and tells nobody.
-- Anyone may add, edit, finish or cancel any job.
+  "Vrati u zakazano" undoes done or cancelled. Delete is for mistakes and
+  tells nobody.
+- All of this is the admin's; workers only look.
 
 ## Price list
 
@@ -67,20 +77,19 @@ crew's paper list (`assets/price_list.json`, 2026-11-15) with one tap.
 
 ## Wallet and earnings
 
-- **Wallet:** one balance in dinars. A finished job with "U novčanik" comes
-  in by itself as one line: what was charged, less the helpers' pay, which
-  leaves the wallet with it. Anyone puts money in or records spending, such
-  as equipment (what for, date, who). The month card shows the admin
-  *Moja zarada*, *Dato radnicima* and *Troškovi*; a worker sees what they
-  were paid. Spending can never take the wallet below zero: the app checks it, not
-  the rules, so two people spending at the same moment could still both get
-  through. Entries are changed or deleted by their author or the admin.
+- **Wallet (the admin's only):** one balance in dinars. A finished job with
+  "U novčanik" comes in by itself as one line: what was charged, less the
+  helpers' pay, which leaves the wallet with it. The admin puts money in or
+  records spending, such as equipment (what for, date, who). The month card
+  shows *Moja zarada*, *Dato radnicima* and *Troškovi*. Spending can never
+  take the wallet below zero: the app checks it, not the rules.
 - **Earnings:** a month or a year: charged, jobs, average per job, given to
   helpers, costs (wallet spending), the admin's earnings
   (charged − helpers − costs), money put in by hand,
   cancelled jobs, by price-list category, paid to each helper, month by month
-  for a year, and the finished jobs. A worker also sees what they got.
-  Computed every time, never stored.
+  for a year, and the finished jobs. A worker sees only what they were
+  paid, month by month, and on which jobs. Computed every time, never
+  stored.
 
 Everything is in dinars, stored as integers in para.
 
@@ -89,7 +98,7 @@ Everything is in dinars, stored as integers in para.
 | Collection | Fields |
 |---|---|
 | `users/{uid}` | `email`, `firstName`, `lastName`, `phone`, `role` (`admin`/`worker`), `disabled`, `createdAt` |
-| `jobs/{id}` | `ownerId`, `date` (yyyy-MM-dd), `start` (HH:mm), `end` (always '' since v1.1.1; the rules still require it), `clientName`, `clientPhone`, `address`, `items` (`{itemId, categoryId, name, priceMinor, qty}`), `subtotalMinor`, `discountPercent`, `travelMinor`, `priceMinor`, `finalDiscountPercent` (0–100, since v1.1.2), `helpers` (`{uid, payMinor}`), `workers` (the helpers' uids, for v1.0.x apps), `notes`, `status` (`booked`/`done`/`cancelled`), `paidMinor`, `toWallet`, `doneBy`, `doneAt`, `rev`, `updatedBy`, `createdAt`, `updatedAt`; v1.1.0 only, ignored: `equipmentMinor`; worker only: `pushRev`, `pushStatus` |
+| `jobs/{id}` | `ownerId`, `date` (yyyy-MM-dd), `start` (HH:mm), `end` (always '' since v1.1.1; the rules still require it), `clientName`, `clientPhone`, `address`, `items` (`{itemId, categoryId, name, priceMinor, qty}`), `subtotalMinor`, `discountPercent`, `travelMinor`, `priceMinor`, `finalDiscountPercent` (0–100, since v1.1.2; set only by the admin), `helpers` (`{uid, payMinor}`), `workers` (the helpers' uids, for v1.0.x apps), `notes`, `status` (`booked`/`done`/`cancelled`), `paidMinor`, `toWallet`, `doneBy`, `doneAt`, `rev`, `updatedBy`, `createdAt`, `updatedAt`; v1.1.0 only, ignored: `equipmentMinor`; worker only: `pushRev`, `pushStatus` |
 | `walletEntries/{id}` | `type` (`deposit`/`withdrawal`), `amountMinor`, `description`, `date`, `userId` (who), `createdBy` (author), `updatedAt` |
 | `priceCategories/{id}` | `name`, `note`, `order`, `archived` |
 | `priceItems/{id}` | `categoryId`, `name`, `priceMinor`, `order`, `archived` |

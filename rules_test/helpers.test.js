@@ -48,14 +48,14 @@ describe('helpers and equipment', () => {
     await seedCrew();
     await seedJob('j1', 'boss', { rev: 1 });
     await assertSucceeds(
-      write('ana', {
+      write('boss', {
         status: 'done',
         paidMinor: 2700000,
         toWallet: true,
         helpers,
         equipmentMinor: 120000,
         workers: ['ana', 'bob'],
-        doneBy: 'ana',
+        doneBy: 'boss',
         doneAt: serverTimestamp(),
       }),
     );
@@ -74,6 +74,6 @@ describe('helpers and equipment', () => {
     await seedCrew();
     await seedJob('j1', 'boss', { rev: 2, helpers, equipmentMinor: 50000 });
     // The old app knows nothing of helpers: it sends only its own fields.
-    await assertSucceeds(write('ana', { notes: 'Golf 7, crni', workers: ['ana'] }));
+    await assertSucceeds(write('boss', { notes: 'Golf 7, crni', workers: ['ana'] }));
   });
 });

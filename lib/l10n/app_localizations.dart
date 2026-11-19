@@ -128,12 +128,6 @@ abstract class AppLocalizations {
   /// **'Address (optional)'**
   String get address;
 
-  /// No description provided for @adminEarnings.
-  ///
-  /// In en, this message translates to:
-  /// **'{name}\'s earnings'**
-  String adminEarnings(String name);
-
   /// No description provided for @agreedPrice.
   ///
   /// In en, this message translates to:
@@ -811,12 +805,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Later'**
   String get later;
-
-  /// No description provided for @leftForAdmin.
-  ///
-  /// In en, this message translates to:
-  /// **'Left for {name}'**
-  String leftForAdmin(String name);
 
   /// No description provided for @leftForYou.
   ///

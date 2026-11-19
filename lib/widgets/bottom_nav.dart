@@ -3,12 +3,19 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 
-/// The three tabs at the bottom: calendar, wallet, earnings.
+/// The tabs at the bottom: calendar, wallet, earnings. Without [wallet]
+/// (a worker) there is no wallet tab, and [index] counts without it.
 class BottomNav extends StatelessWidget {
-  const BottomNav({super.key, required this.index, required this.onSelect});
+  const BottomNav({
+    super.key,
+    required this.index,
+    required this.onSelect,
+    this.wallet = true,
+  });
 
   final int index;
   final ValueChanged<int> onSelect;
+  final bool wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +23,7 @@ class BottomNav extends StatelessWidget {
     final c = context.colors;
     final items = [
       (Icons.calendar_month_rounded, t.tabCalendar),
-      (Icons.account_balance_wallet_rounded, t.tabWallet),
+      if (wallet) (Icons.account_balance_wallet_rounded, t.tabWallet),
       (Icons.show_chart_rounded, t.tabEarnings),
     ];
     return DecoratedBox(

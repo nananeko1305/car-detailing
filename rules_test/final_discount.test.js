@@ -1,5 +1,6 @@
 // v1.1.2: the final discount, a whole percent from 0 to 100 on top of the
-// price list's. Old jobs and older apps leave it out, and must keep working.
+// price list's. Only the admin writes jobs (v1.2.0), so only the admin gives
+// it. Old jobs and older apps leave it out, and must keep working.
 
 import { describe, test } from 'node:test';
 
@@ -17,10 +18,11 @@ const write = (uid, fields) =>
     updatedAt: serverTimestamp(),
   });
 
-const book = (id, changes) => setDoc(doc(as('boss'), `jobs/${id}`), job('boss', changes));
+const book = (id, changes, uid = 'boss') =>
+  setDoc(doc(as(uid), `jobs/${id}`), job(uid, changes));
 
 describe('final discount', () => {
-  test('a booking may give a final discount from 0 to 100 percent', async () => {
+  test('the admin gives a final discount from 0 to 100 percent', async () => {
     await seedCrew();
     await assertSucceeds(book('a', { finalDiscountPercent: 5 }));
     await assertSucceeds(book('b', { finalDiscountPercent: 0 }));
@@ -35,16 +37,23 @@ describe('final discount', () => {
     await assertFails(book('d', { finalDiscountPercent: '5' }));
   });
 
-  test('an older job, without it, gets one from the new app', async () => {
+  test('a worker gives none, on a new job or an old one', async () => {
+    await seedCrew();
+    await assertFails(book('a', { finalDiscountPercent: 5 }, 'ana'));
+    await seedJob('j1', 'boss', { rev: 1 });
+    await assertFails(write('ana', { finalDiscountPercent: 5 }));
+  });
+
+  test('an older job, without it, gets one from the admin', async () => {
     await seedCrew();
     // The live job's shape on 2026-11-17: no helpers, no final discount.
     await seedJob('j1', 'boss', { rev: 3, workers: ['boss'] });
-    await assertSucceeds(write('ana', { finalDiscountPercent: 10, priceMinor: 1080000 }));
+    await assertSucceeds(write('boss', { finalDiscountPercent: 10, priceMinor: 1080000 }));
   });
 
   test('an older app still edits a job that has one', async () => {
     await seedCrew();
     await seedJob('j1', 'boss', { rev: 2, finalDiscountPercent: 5 });
-    await assertSucceeds(write('ana', { notes: 'Golf 7, crni', workers: ['ana'] }));
+    await assertSucceeds(write('boss', { notes: 'Golf 7, crni', workers: ['ana'] }));
   });
 });

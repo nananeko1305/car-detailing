@@ -15,9 +15,9 @@ import '../widgets/item_picker_sheet.dart';
 import '../widgets/job_form_parts.dart';
 import '../widgets/pearl.dart';
 
-/// Books a job, or edits one. The price comes from the chosen price-list
-/// items and the terms, and may be typed over. A new job can be saved as
-/// already done, for a client who came without booking.
+/// Books a job, or edits one; the admin only. The price comes from the
+/// chosen price-list items and the terms, and may be typed over. A new job
+/// can be saved as already done, for a client who came without booking.
 class JobFormScreen extends StatefulWidget {
   const JobFormScreen({
     super.key,
@@ -201,10 +201,6 @@ class _JobFormScreenState extends State<JobFormScreen> {
       (parseMoneyOrZero(_price.text) ?? 0) -
       _helpers.helpers.fold<int>(0, (a, h) => a + h.payMinor);
 
-  String _leftLabel(AppLocalizations t) => widget.profile.isAdmin
-      ? t.leftForYou
-      : t.leftForAdmin(widget.data.admin?.shortName ?? t.roleAdmin);
-
   void _snack(String text) =>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
 
@@ -348,7 +344,7 @@ class _JobFormScreenState extends State<JobFormScreen> {
               controller: _helpers,
               candidates: widget.data.helperCandidates,
             ),
-            LeftOverLine(label: _leftLabel(t), amount: _leftOver),
+            LeftOverLine(label: t.leftForYou, amount: _leftOver),
             gap,
             TextFormField(
               controller: _notes,

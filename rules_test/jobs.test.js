@@ -1,7 +1,18 @@
+// Since v1.2.0 only the admin writes jobs; workers read the calendar.
+
 import { describe, test } from 'node:test';
 
 import { assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
-import { deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 
 import { as, job, seedCrew, seedJob } from './setup.js';
 
@@ -14,34 +25,41 @@ const edit = (uid, changes = {}, rev = 2) =>
     ...changes,
   });
 
+const create = (id, uid, changes) => setDoc(doc(as(uid), `jobs/${id}`), job(uid, changes));
+
 describe('booking a job', () => {
-  test('anyone active books, as themselves', async () => {
+  test('the admin books, as themselves', async () => {
     await seedCrew();
-    const create = (id, uid, changes) => setDoc(doc(as(uid), `jobs/${id}`), job(uid, changes));
-    await assertSucceeds(create('a', 'ana'));
-    await assertSucceeds(create('b', 'boss'));
-    await assertSucceeds(create('c', 'ana', { items: [], notes: 'Passat karavan', end: '11:30' }));
-    await assertFails(setDoc(doc(as('ana'), 'jobs/d'), job('bob')));
-    await assertFails(create('e', 'ana', { updatedBy: 'bob' }));
-    await assertFails(create('f', 'ana', { rev: 2 }));
-    await assertFails(create('g', 'ana', { status: 'cancelled' }));
+    await assertSucceeds(create('a', 'boss'));
+    await assertSucceeds(create('b', 'boss', { items: [], notes: 'Passat karavan', end: '' }));
+    await assertFails(setDoc(doc(as('boss'), 'jobs/c'), job('ana')));
+    await assertFails(create('d', 'boss', { updatedBy: 'ana' }));
+    await assertFails(create('e', 'boss', { rev: 2 }));
+    await assertFails(create('f', 'boss', { status: 'cancelled' }));
+  });
+
+  test('a worker books nothing, not even as themselves', async () => {
+    await seedCrew();
+    await assertFails(create('a', 'ana'));
+    await assertFails(create('b', 'bob', { status: 'done', paidMinor: 500000 }));
+    await assertFails(create('c', 'gone'));
   });
 
   test('a booked job may leave out what is filled in when done', async () => {
     await seedCrew();
-    const bare = job('ana');
+    const bare = job('boss');
     for (const key of ['paidMinor', 'toWallet', 'doneBy', 'doneAt']) delete bare[key];
-    await assertSucceeds(setDoc(doc(as('ana'), 'jobs/a'), bare));
-    const missing = job('ana');
+    await assertSucceeds(setDoc(doc(as('boss'), 'jobs/a'), bare));
+    const missing = job('boss');
     delete missing.travelMinor;
-    await assertFails(setDoc(doc(as('ana'), 'jobs/b'), missing));
+    await assertFails(setDoc(doc(as('boss'), 'jobs/b'), missing));
   });
 
   test('a job done on the spot needs what was paid', async () => {
     await seedCrew();
-    const done = { status: 'done', doneBy: 'ana', doneAt: serverTimestamp(), toWallet: true };
-    await assertFails(setDoc(doc(as('ana'), 'jobs/a'), job('ana', done)));
-    await assertSucceeds(setDoc(doc(as('ana'), 'jobs/b'), job('ana', { ...done, paidMinor: 2700000 })));
+    const done = { status: 'done', doneBy: 'boss', doneAt: serverTimestamp(), toWallet: true };
+    await assertFails(create('a', 'boss', done));
+    await assertSucceeds(create('b', 'boss', { ...done, paidMinor: 2700000 }));
   });
 
   test('fields have the right shape', async () => {
@@ -68,56 +86,76 @@ describe('booking a job', () => {
       { currency: 'RSD' },
     ];
     for (const [i, changes] of bad.entries()) {
-      await assertFails(setDoc(doc(as('ana'), `jobs/bad${i}`), job('ana', changes)));
+      await assertFails(create(`bad${i}`, 'boss', changes));
     }
   });
 });
 
-describe('changing a job', () => {
-  test('anyone active edits, finishes or cancels anyone’s job', async () => {
+describe('reading jobs', () => {
+  test('every active account reads the calendar; a switched-off one does not', async () => {
     await seedCrew();
-    await seedJob('j1', 'ana');
-    await assertSucceeds(edit('bob', { address: 'Zvezdara', workers: ['ana', 'bob'] }));
+    await seedJob('j1', 'boss');
+    await assertSucceeds(getDoc(doc(as('ana'), 'jobs/j1')));
+    await assertSucceeds(getDocs(collection(as('bob'), 'jobs')));
+    await assertFails(getDoc(doc(as('gone'), 'jobs/j1')));
+  });
+});
+
+describe('changing a job', () => {
+  test('the admin edits, finishes, cancels and reopens', async () => {
+    await seedCrew();
+    await seedJob('j1', 'boss');
+    await assertSucceeds(edit('boss', { address: 'Zvezdara', workers: ['ana', 'bob'] }));
     await assertSucceeds(edit('boss', { status: 'cancelled' }, 3));
-    await assertSucceeds(edit('ana', { status: 'booked' }, 4));
+    await assertSucceeds(edit('boss', { status: 'booked' }, 4));
     await assertSucceeds(
-      edit('bob', { status: 'done', paidMinor: 2500000, toWallet: true, doneBy: 'bob', doneAt: serverTimestamp() }, 5),
+      edit('boss', { status: 'done', paidMinor: 2500000, toWallet: true, doneBy: 'boss', doneAt: serverTimestamp() }, 5),
     );
-    await assertFails(edit('bob', { status: 'finished' }, 6));
-    await assertFails(edit('bob', { status: 'done', paidMinor: null }, 6));
+    await assertFails(edit('boss', { status: 'finished' }, 6));
+    await assertFails(edit('boss', { status: 'done', paidMinor: null }, 6));
+  });
+
+  test('a worker changes nothing, not even a job they help on', async () => {
+    await seedCrew();
+    await seedJob('j1', 'boss', { workers: ['ana'], helpers: [{ uid: 'ana', payMinor: 300000 }] });
+    await assertFails(edit('ana', { notes: 'Kasnim 10 min' }));
+    await assertFails(edit('ana', { status: 'done', paidMinor: 2500000, toWallet: true, doneBy: 'ana', doneAt: serverTimestamp() }));
+    await assertFails(edit('ana', { status: 'cancelled' }));
+    await assertFails(edit('ana', { helpers: [{ uid: 'ana', payMinor: 900000 }] }));
+    await assertFails(edit('bob', { address: 'Zvezdara' }));
   });
 
   test('rev counts up by exactly one, as the one who saves', async () => {
     await seedCrew();
-    await seedJob('j1', 'ana', { rev: 3 });
-    await assertFails(edit('bob', { notes: 'x' }, 3));
-    await assertFails(edit('bob', { notes: 'x' }, 5));
-    await assertFails(edit('bob', { notes: 'x', updatedBy: 'ana' }, 4));
-    await assertSucceeds(edit('bob', { notes: 'x' }, 4));
+    await seedJob('j1', 'boss', { rev: 3 });
+    await assertFails(edit('boss', { notes: 'x' }, 3));
+    await assertFails(edit('boss', { notes: 'x' }, 5));
+    await assertFails(edit('boss', { notes: 'x', updatedBy: 'ana' }, 4));
+    await assertSucceeds(edit('boss', { notes: 'x' }, 4));
   });
 
   test('nobody writes pushRev or pushStatus, or changes the author', async () => {
     await seedCrew();
     await seedJob('j1', 'ana', { pushRev: 1, pushStatus: 'booked' });
-    for (const uid of ['ana', 'boss']) {
-      await assertFails(edit(uid, { pushRev: 2 }));
-      await assertFails(edit(uid, { pushStatus: 'cancelled' }));
-      await assertFails(edit(uid, { ownerId: 'bob' }));
-      await assertFails(edit(uid, { createdAt: serverTimestamp() }));
-    }
-    // The worker's marks already on the job do not get in the way.
-    await assertSucceeds(edit('bob', { notes: 'Pozvati pre dolaska' }));
+    await assertFails(edit('boss', { pushRev: 2 }));
+    await assertFails(edit('boss', { pushStatus: 'cancelled' }));
+    await assertFails(edit('boss', { ownerId: 'boss' }));
+    await assertFails(edit('boss', { createdAt: serverTimestamp() }));
+    // The worker's marks already on the job, and a worker as its author
+    // (from before v1.2.0), do not get in the way.
+    await assertSucceeds(edit('boss', { notes: 'Pozvati pre dolaska' }));
   });
 });
 
 describe('deleting a job', () => {
-  test('only its author or the admin', async () => {
+  test('only the admin, even for a job a worker booked before v1.2.0', async () => {
     await seedCrew();
     await seedJob('j1', 'ana');
-    await seedJob('j2', 'bob');
-    await assertFails(deleteDoc(doc(as('bob'), 'jobs/j1')));
+    await seedJob('j2', 'boss');
+    await assertFails(deleteDoc(doc(as('ana'), 'jobs/j1')));
+    await assertFails(deleteDoc(doc(as('bob'), 'jobs/j2')));
     await assertFails(deleteDoc(doc(as('gone'), 'jobs/j2')));
-    await assertSucceeds(deleteDoc(doc(as('ana'), 'jobs/j1')));
+    await assertSucceeds(deleteDoc(doc(as('boss'), 'jobs/j1')));
     await assertSucceeds(deleteDoc(doc(as('boss'), 'jobs/j2')));
   });
 });

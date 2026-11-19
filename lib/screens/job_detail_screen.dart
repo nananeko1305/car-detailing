@@ -127,18 +127,20 @@ class _Detail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(t.job),
+        // Only the admin changes jobs; a worker only looks.
         actions: [
-          IconButton(
-            tooltip: t.edit,
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: () => _edit(context),
-          ),
-          if (profile.canDelete(job.ownerId))
+          if (profile.isAdmin) ...[
+            IconButton(
+              tooltip: t.edit,
+              icon: const Icon(Icons.edit_outlined),
+              onPressed: () => _edit(context),
+            ),
             IconButton(
               tooltip: t.delete,
               icon: const Icon(Icons.delete_outline_rounded),
               onPressed: () => _delete(context),
             ),
+          ],
         ],
       ),
       body: ListView(
@@ -188,27 +190,29 @@ class _Detail extends StatelessWidget {
                   ),
                   if (job.isDone)
                     _Row(t.charged, money(job.earnedMinor), strong: true),
-                  // Who helped for how much, and what that leaves the admin.
-                  for (final h in job.helpers)
-                    _Row(
-                      t.helperPay(data.nameOf(h.uid)),
-                      '− ${money(h.payMinor)}',
-                    ),
-                  if (job.helpers.isNotEmpty)
-                    _Row(
-                      profile.isAdmin
-                          ? t.leftForYou
-                          : t.leftForAdmin(
-                              data.admin?.shortName ?? t.roleAdmin,
-                            ),
-                      money(
-                        job.netOf(
-                          job.isDone ? job.earnedMinor : job.priceMinor,
-                        ),
+                  // The admin sees who helped for how much and what that
+                  // leaves them; a helper sees only their own pay.
+                  if (profile.isAdmin) ...[
+                    for (final h in job.helpers)
+                      _Row(
+                        t.helperPay(data.nameOf(h.uid)),
+                        '− ${money(h.payMinor)}',
                       ),
-                      strong: true,
-                    ),
-                  if (job.isDone)
+                    if (job.helpers.isNotEmpty)
+                      _Row(
+                        t.leftForYou,
+                        money(
+                          job.netOf(
+                            job.isDone ? job.earnedMinor : job.priceMinor,
+                          ),
+                        ),
+                        strong: true,
+                      ),
+                  ] else
+                    for (final h in job.helpers)
+                      if (h.uid == profile.uid)
+                        _Row(t.iGot, money(h.payMinor), strong: true),
+                  if (job.isDone && profile.isAdmin)
                     Text(
                       job.toWallet ? t.wentIntoWallet : t.notIntoWallet,
                       style: TextStyle(fontSize: 12, color: c.muted),
@@ -260,29 +264,31 @@ class _Detail extends StatelessWidget {
             muted: true,
           ),
           const SizedBox(height: 20),
-          if (job.status == JobStatus.booked) ...[
-            PearlButton(
-              label: t.finishJob,
-              icon: Icons.check_rounded,
-              onPressed: () => showFinishJobSheet(
-                context,
-                data: data,
-                job: job,
-                me: profile.uid,
+          // A worker only looks: the actions are the admin's.
+          if (profile.isAdmin)
+            if (job.status == JobStatus.booked) ...[
+              PearlButton(
+                label: t.finishJob,
+                icon: Icons.check_rounded,
+                onPressed: () => showFinishJobSheet(
+                  context,
+                  data: data,
+                  job: job,
+                  me: profile.uid,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            OutlinedButton.icon(
-              onPressed: () => _cancel(context),
-              icon: const Icon(Icons.event_busy_outlined),
-              label: Text(t.cancelJob),
-            ),
-          ] else
-            OutlinedButton.icon(
-              onPressed: () => _reopen(context),
-              icon: const Icon(Icons.undo_rounded),
-              label: Text(t.reopen),
-            ),
+              const SizedBox(height: 10),
+              OutlinedButton.icon(
+                onPressed: () => _cancel(context),
+                icon: const Icon(Icons.event_busy_outlined),
+                label: Text(t.cancelJob),
+              ),
+            ] else
+              OutlinedButton.icon(
+                onPressed: () => _reopen(context),
+                icon: const Icon(Icons.undo_rounded),
+                label: Text(t.reopen),
+              ),
         ],
       ),
     );

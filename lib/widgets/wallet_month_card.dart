@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
-import '../models/app_user.dart';
 import '../models/earnings.dart';
 import '../money/money.dart';
 import '../services/live_data.dart';
@@ -9,14 +8,13 @@ import '../theme/app_colors.dart';
 import 'earnings_parts.dart';
 import 'month_switcher.dart';
 
-/// One month in the wallet. The admin sees what the month left them, what
-/// went to the helpers and what was spent (equipment included, entered by
-/// hand); a worker sees what they were paid.
+/// One month in the wallet, which only the admin sees: what the month left
+/// them, what went to the helpers and what was spent (equipment included,
+/// entered by hand).
 class WalletMonthCard extends StatefulWidget {
-  const WalletMonthCard({super.key, required this.data, required this.profile});
+  const WalletMonthCard({super.key, required this.data});
 
   final LiveData data;
-  final AppUser profile;
 
   @override
   State<WalletMonthCard> createState() => _WalletMonthCardState();
@@ -32,7 +30,6 @@ class _WalletMonthCardState extends State<WalletMonthCard> {
     final locale = Localizations.localeOf(context).toLanguageTag();
     String money(int v) => formatMoney(v, locale);
     final data = widget.data;
-    final me = data.userById(widget.profile.uid) ?? widget.profile;
     final e = Earnings.of(
       jobs: data.jobs ?? const [],
       entries: data.entries ?? const [],
@@ -54,45 +51,39 @@ class _WalletMonthCardState extends State<WalletMonthCard> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: me.isAdmin
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _Big(
-                          label: t.myEarnings,
-                          value: money(e.adminNetMinor),
-                          color: e.adminNetMinor < 0 ? c.danger : c.mint,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _Big(
+                    label: t.myEarnings,
+                    value: money(e.adminNetMinor),
+                    color: e.adminNetMinor < 0 ? c.danger : c.mint,
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: StatTile(
+                          label: t.givenToHelpers,
+                          value: money(e.helpersPaidMinor),
                         ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: StatTile(
-                                label: t.givenToHelpers,
-                                value: money(e.helpersPaidMinor),
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: StatTile(
-                                label: t.costs,
-                                value: money(e.spendingMinor),
-                              ),
-                            ),
-                          ],
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: StatTile(
+                          label: t.costs,
+                          value: money(e.spendingMinor),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          t.chargedShort(money(e.earnedMinor)),
-                          style: TextStyle(fontSize: 12, color: c.muted),
-                        ),
-                      ],
-                    )
-                  : _Big(
-                      label: t.iGot,
-                      value: money(e.paidTo(me.uid)),
-                      color: c.mint,
-                    ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    t.chargedShort(money(e.earnedMinor)),
+                    style: TextStyle(fontSize: 12, color: c.muted),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

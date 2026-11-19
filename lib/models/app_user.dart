@@ -30,11 +30,9 @@ class AppUser {
   final String lastName;
   final String phone;
 
+  /// Only the admin books, changes and deletes jobs and keeps the wallet;
+  /// `firestore.rules` says the same. Workers only look.
   bool get isAdmin => role == UserRole.admin;
-
-  /// Jobs and wallet entries may be deleted only by their author or the
-  /// admin; `firestore.rules` says the same.
-  bool canDelete(String authorId) => isAdmin || uid == authorId;
 
   /// "First Last", or the email while no name is set.
   String get displayName {
