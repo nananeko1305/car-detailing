@@ -45,6 +45,7 @@ class Job {
     this.discountPercent = 0,
     this.travelMinor = 0,
     this.priceMinor = 0,
+    this.finalDiscountPercent = 0,
     this.helpers = const [],
     this.notes = '',
     this.status = JobStatus.booked,
@@ -76,8 +77,11 @@ class Job {
   final int discountPercent;
   final int travelMinor;
 
-  /// The agreed price, after the discount; may be typed over.
+  /// The agreed price, after the discounts; may be typed over.
   final int priceMinor;
+
+  /// The crew's own discount on top of the price list's, in percent.
+  final int finalDiscountPercent;
 
   /// Who helps the admin on it, each with their pay; empty = working alone.
   /// The profit always stays with the admin.
@@ -115,6 +119,15 @@ class Job {
 
   /// What the job earned: the charged amount once done, otherwise nothing.
   int get earnedMinor => isDone ? (paidMinor ?? priceMinor) : 0;
+
+  /// The price list's discount, as booked.
+  int get discountMinor => percentOf(subtotalMinor, discountPercent);
+
+  /// The final discount, from the list total (items, discount, travel).
+  int get finalDiscountMinor => percentOf(
+    subtotalMinor - discountMinor + travelMinor,
+    finalDiscountPercent,
+  );
 
   /// The helpers' uids, as the older `workers` field holds them.
   List<String> get workers => [for (final h in helpers) h.uid];
@@ -159,6 +172,7 @@ class Job {
       discountPercent: (d['discountPercent'] as num?)?.toInt() ?? 0,
       travelMinor: (d['travelMinor'] as num?)?.toInt() ?? 0,
       priceMinor: (d['priceMinor'] as num?)?.toInt() ?? 0,
+      finalDiscountPercent: (d['finalDiscountPercent'] as num?)?.toInt() ?? 0,
       // Jobs from before helpers (v1.0.x) only list `workers`: the others
       // than whoever booked it become helpers with no pay recorded.
       helpers: rawHelpers is List
@@ -200,6 +214,7 @@ class Job {
     'discountPercent': discountPercent,
     'travelMinor': travelMinor,
     'priceMinor': priceMinor,
+    'finalDiscountPercent': finalDiscountPercent,
     'helpers': [for (final h in helpers) h.toMap()],
     'workers': workers,
     'notes': notes.trim(),

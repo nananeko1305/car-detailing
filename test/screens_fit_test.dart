@@ -109,6 +109,20 @@ void main() {
       expect(find.textContaining(sr ? 'oprem' : 'quipment'), findsNothing);
     });
 
+    testWidgets('a final discount shows on the job ($lang)', (tester) async {
+      final data = fakeData()
+        ..jobs = [jobOn(dayFromToday(0), id: 'fd', finalDiscountPercent: 10)];
+      await fits(
+        tester,
+        JobDetailScreen(data: data, profile: admin, jobId: 'fd'),
+        scaffold: false,
+      );
+      expect(
+        find.text(sr ? 'Konačan popust 10%' : 'Final discount 10%'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('wallet month: the admin sees the split ($lang)', (
       tester,
     ) async {
@@ -160,6 +174,20 @@ void main() {
       // A job has only a start time.
       expect(find.text(sr ? 'Početak' : 'Start'), findsOneWidget);
       expect(find.text(sr ? 'Kraj' : 'End'), findsNothing);
+      // The final discount sets the agreed price: 13.515 − 10% = 12.163.
+      final discount = find.widgetWithText(
+        TextFormField,
+        sr ? 'Konačan popust' : 'Final discount',
+      );
+      await tester.scrollUntilVisible(
+        discount,
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.enterText(discount, '10');
+      await tester.pump();
+      expect(find.text('12163'), findsOneWidget);
+      expect(tester.takeException(), isNull);
       await fits(
         tester,
         JobFormScreen(data: data, profile: admin, day: DateTime.now()),

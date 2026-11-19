@@ -150,7 +150,7 @@ class QuoteSummary extends StatelessWidget {
             line(t.travel, formatMoney(quote.travelMinor, locale)),
           line(
             t.byPriceList,
-            formatMoney(quote.totalMinor, locale),
+            formatMoney(quote.listTotalMinor, locale),
             strong: true,
           ),
         ],

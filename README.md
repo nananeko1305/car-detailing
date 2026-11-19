@@ -41,7 +41,10 @@ there is no second record of the money.
 - The price is worked out from the items and the terms: the biggest discount
   whose threshold the order is **strictly above** ("iznad 6.000"), rounded to
   whole dinars, plus the travel fee below the free-travel amount when one is
-  set. Anyone can type over it; "Vrati cenu po cenovniku" brings it back.
+  set. On top of that, a **"Konačan popust"** in whole percent comes off the
+  whole (items, discount and travel), rounded to whole dinars; typing it
+  sets the agreed price again. Anyone can type over the price; "Vrati cenu
+  po cenovniku" brings it back.
 - **booked → done or cancelled.** "Završi posao" asks what was charged
   (the agreed price unless it changed on the spot), whether it goes into the
   wallet (on by default), and the helpers' pay, filled in from the booking.
@@ -86,7 +89,7 @@ Everything is in dinars, stored as integers in para.
 | Collection | Fields |
 |---|---|
 | `users/{uid}` | `email`, `firstName`, `lastName`, `phone`, `role` (`admin`/`worker`), `disabled`, `createdAt` |
-| `jobs/{id}` | `ownerId`, `date` (yyyy-MM-dd), `start` (HH:mm), `end` (always '' since v1.1.1; the rules still require it), `clientName`, `clientPhone`, `address`, `items` (`{itemId, categoryId, name, priceMinor, qty}`), `subtotalMinor`, `discountPercent`, `travelMinor`, `priceMinor`, `helpers` (`{uid, payMinor}`), `workers` (the helpers' uids, for v1.0.x apps), `notes`, `status` (`booked`/`done`/`cancelled`), `paidMinor`, `toWallet`, `doneBy`, `doneAt`, `rev`, `updatedBy`, `createdAt`, `updatedAt`; v1.1.0 only, ignored: `equipmentMinor`; worker only: `pushRev`, `pushStatus` |
+| `jobs/{id}` | `ownerId`, `date` (yyyy-MM-dd), `start` (HH:mm), `end` (always '' since v1.1.1; the rules still require it), `clientName`, `clientPhone`, `address`, `items` (`{itemId, categoryId, name, priceMinor, qty}`), `subtotalMinor`, `discountPercent`, `travelMinor`, `priceMinor`, `finalDiscountPercent` (0–100, since v1.1.2), `helpers` (`{uid, payMinor}`), `workers` (the helpers' uids, for v1.0.x apps), `notes`, `status` (`booked`/`done`/`cancelled`), `paidMinor`, `toWallet`, `doneBy`, `doneAt`, `rev`, `updatedBy`, `createdAt`, `updatedAt`; v1.1.0 only, ignored: `equipmentMinor`; worker only: `pushRev`, `pushStatus` |
 | `walletEntries/{id}` | `type` (`deposit`/`withdrawal`), `amountMinor`, `description`, `date`, `userId` (who), `createdBy` (author), `updatedAt` |
 | `priceCategories/{id}` | `name`, `note`, `order`, `archived` |
 | `priceItems/{id}` | `categoryId`, `name`, `priceMinor`, `order`, `archived` |

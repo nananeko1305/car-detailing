@@ -81,6 +81,7 @@ Job jobOn(
   JobStatus status = JobStatus.booked,
   List<JobItem> items = const [sofa, premium],
   List<JobHelper> helpers = const [JobHelper(uid: 'marko', payMinor: 300000)],
+  int finalDiscountPercent = 0,
 }) => Job(
   id: id,
   ownerId: 'stefan',
@@ -93,6 +94,7 @@ Job jobOn(
   subtotalMinor: 1590000,
   discountPercent: 15,
   priceMinor: 1351500,
+  finalDiscountPercent: finalDiscountPercent,
   helpers: helpers,
   notes: 'Audi Q7 crni, BG-123-XY. Interfon ne radi, zvati.',
   status: status,

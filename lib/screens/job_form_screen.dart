@@ -53,6 +53,11 @@ class _JobFormScreenState extends State<JobFormScreen> {
     text: _old == null ? '' : moneyToInput(_old.priceMinor),
   );
   late List<JobItem> _items = [...?_old?.items];
+  late final _finalDiscount = TextEditingController(
+    text: (_old?.finalDiscountPercent ?? 0) == 0
+        ? ''
+        : '${_old!.finalDiscountPercent}',
+  );
   late final _helpers = HelpersController([...?_old?.helpers])
     ..addListener(_refresh);
   late bool _chargeTravel = (_old?.travelMinor ?? 1) > 0;
@@ -60,12 +65,23 @@ class _JobFormScreenState extends State<JobFormScreen> {
   bool _alreadyDone = false;
   bool _toWallet = true;
 
-  Quote get _quote =>
-      quote(_items, widget.data.rules, chargeTravel: _chargeTravel);
+  Quote get _quote => quote(
+    _items,
+    widget.data.rules,
+    chargeTravel: _chargeTravel,
+    finalPercent: int.tryParse(_finalDiscount.text.trim()) ?? 0,
+  );
 
   @override
   void dispose() {
-    for (final c in [_client, _phone, _address, _notes, _price]) {
+    for (final c in [
+      _client,
+      _phone,
+      _address,
+      _notes,
+      _price,
+      _finalDiscount,
+    ]) {
       c.dispose();
     }
     _helpers.dispose();
@@ -161,6 +177,7 @@ class _JobFormScreenState extends State<JobFormScreen> {
       discountPercent: q.discountPercent,
       travelMinor: q.travelMinor,
       priceMinor: price,
+      finalDiscountPercent: _items.isEmpty ? 0 : q.finalPercent,
       helpers: _helpers.helpers,
       notes: _notes.text,
       status: _alreadyDone ? JobStatus.done : JobStatus.booked,
@@ -268,6 +285,33 @@ class _JobFormScreenState extends State<JobFormScreen> {
                   _repriced();
                 }),
               ),
+            if (_items.isNotEmpty) ...[
+              gap,
+              TextFormField(
+                controller: _finalDiscount,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: t.finalDiscount,
+                  suffixText: '%',
+                  prefixIcon: const Icon(Icons.percent_rounded),
+                  helperText: q.finalDiscountMinor > 0
+                      ? '− ${formatMoney(q.finalDiscountMinor, locale)}'
+                      : null,
+                ),
+                // A new discount sets the price again, even a typed one.
+                onChanged: (_) => setState(() {
+                  _priceTyped = false;
+                  _repriced();
+                }),
+                validator: (v) {
+                  final text = v?.trim() ?? '';
+                  final p = int.tryParse(text);
+                  return text.isEmpty || (p != null && p >= 0 && p <= 100)
+                      ? null
+                      : t.invalidPercent;
+                },
+              ),
+            ],
             gap,
             TextFormField(
               controller: _price,

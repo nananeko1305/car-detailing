@@ -312,6 +312,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errWrongCredentials => 'Wrong email or password.';
 
   @override
+  String get finalDiscount => 'Final discount';
+
+  @override
+  String finalDiscountPercent(int percent) {
+    return 'Final discount $percent%';
+  }
+
+  @override
   String get finishJob => 'Finish job';
 
   @override

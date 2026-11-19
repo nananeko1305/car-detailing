@@ -87,6 +87,8 @@
   "errUserDisabled": "Ovaj nalog je isključen.",
   "errWeakPassword": "Lozinka je preslaba (min. 6 karaktera).",
   "errWrongCredentials": "Pogrešan email ili lozinka.",
+  "finalDiscount": "Konačan popust",
+  "finalDiscountPercent": "Konačan popust {percent}%",
   "finishJob": "Završi posao",
   "finishedBy": "Završio/la: {name}",
   "finishedJobs": "Završeni poslovi",

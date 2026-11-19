@@ -170,10 +170,15 @@ class _Detail extends StatelessWidget {
                   if (job.discountPercent > 0)
                     _Row(
                       t.discountPercent(job.discountPercent),
-                      '− ${money((job.subtotalMinor * job.discountPercent / 10000).round() * 100)}',
+                      '− ${money(job.discountMinor)}',
                     ),
                   if (job.travelMinor > 0)
                     _Row(t.travel, money(job.travelMinor)),
+                  if (job.finalDiscountPercent > 0)
+                    _Row(
+                      t.finalDiscountPercent(job.finalDiscountPercent),
+                      '− ${money(job.finalDiscountMinor)}',
+                    ),
                   if (job.items.isNotEmpty)
                     Divider(color: c.border, height: 18),
                   _Row(

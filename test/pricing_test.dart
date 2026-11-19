@@ -1,3 +1,4 @@
+import 'package:car_detailing/models/job.dart';
 import 'package:car_detailing/models/price_list.dart';
 import 'package:car_detailing/models/pricing.dart';
 import 'package:car_detailing/money/money.dart';
@@ -58,6 +59,48 @@ void main() {
       expect(quote([item(2500)], paid).travelMinor, 0);
       expect(quote([item(1000)], paid, chargeTravel: false).travelMinor, 0);
       expect(quote(const [], paid).travelMinor, 0);
+    });
+  });
+
+  group('final discount', () {
+    test('comes off last, from the list total', () {
+      final q = quote([item(5000)], rules, finalPercent: 5);
+      expect(q.listTotalMinor, 500000);
+      expect(q.finalDiscountMinor, 25000);
+      expect(q.totalMinor, 475000);
+    });
+
+    test("stacks on the price list's discount", () {
+      // 10.800 − 15% = 9.180; − 5% = 8.721.
+      final q = quote([item(10800)], rules, finalPercent: 5);
+      expect(q.discountPercent, 15);
+      expect(q.listTotalMinor, 918000);
+      expect(q.totalMinor, 872100);
+    });
+
+    test('includes travel, and is rounded to whole dinars', () {
+      const paid = PricingRules(travelMinor: 50000);
+      expect(quote([item(1000)], paid, finalPercent: 10).totalMinor, 135000);
+      final q = quote([item(1001)], rules, finalPercent: 5);
+      expect(q.totalMinor % 100, 0);
+    });
+
+    test('stays between 0 and 100 percent', () {
+      expect(quote([item(5000)], rules, finalPercent: 150).totalMinor, 0);
+      expect(quote([item(5000)], rules, finalPercent: -5).totalMinor, 500000);
+    });
+
+    test('a job keeps it, and shows the same amount as the form did', () {
+      final q = quote([item(10800)], rules, finalPercent: 5);
+      final j = Job.fromMap('x', {
+        'subtotalMinor': q.subtotalMinor,
+        'discountPercent': q.discountPercent,
+        'travelMinor': q.travelMinor,
+        'finalDiscountPercent': 5,
+      });
+      expect(j.finalDiscountMinor, q.finalDiscountMinor);
+      expect(j.formFields()['finalDiscountPercent'], 5);
+      expect(Job.fromMap('x', const {}).finalDiscountPercent, 0);
     });
   });
 
