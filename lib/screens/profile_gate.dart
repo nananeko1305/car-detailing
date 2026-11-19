@@ -56,7 +56,10 @@ class _ProfileGateState extends State<ProfileGate> {
             body: t.disabledBody,
           );
         }
-        return HomeScreen(profile: profile);
+        // Keyed by role: the home screen settles its tabs and whether it
+        // reads the wallet once, so a role changed in the database starts it
+        // afresh instead of keeping the old one until the app restarts.
+        return HomeScreen(key: ValueKey(profile.role), profile: profile);
       },
     );
   }

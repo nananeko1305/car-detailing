@@ -60,8 +60,6 @@ class PriceListScreen extends StatelessWidget {
                     if (categories.isEmpty) _Empty(admin: admin),
                     for (final c in categories)
                       _CategoryCard(data: data, category: c, admin: admin),
-                    if (categories.isNotEmpty)
-                      _Terms(rules: data.rules, admin: admin),
                   ],
                 ),
         );
@@ -258,71 +256,6 @@ class _CategoryCard extends StatelessWidget {
                     label: Text(t.newItem),
                   ),
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Terms extends StatelessWidget {
-  const _Terms({required this.rules, required this.admin});
-
-  final PricingRules rules;
-  final bool admin;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
-    final c = context.colors;
-    final locale = Localizations.localeOf(context).toLanguageTag();
-    String money(int v) => formatMoney(v, locale);
-    final lines = [
-      for (final d in rules.discounts)
-        t.discountRule(d.percent, money(d.overMinor)),
-      t.freeTravelRule(money(rules.freeTravelFromMinor)),
-      if (rules.travelMinor > 0) t.travelFeeRule(money(rules.travelMinor)),
-    ];
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(c.radius),
-        onTap: admin
-            ? () async {
-                final r = await showRulesDialog(context, rules);
-                if (r != null && context.mounted) {
-                  saveInBackground(
-                    context,
-                    () => PriceListRepository.instance.saveRules(r),
-                  );
-                }
-              }
-            : null,
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(child: Text(t.terms, style: c.display(17))),
-                  if (admin)
-                    Icon(Icons.edit_outlined, size: 18, color: c.muted),
-                ],
-              ),
-              const SizedBox(height: 6),
-              for (final l in lines)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text('• $l'),
-                ),
-              if (admin) ...[
-                const SizedBox(height: 6),
-                Text(
-                  t.priceListAdminHint,
-                  style: TextStyle(fontSize: 12, color: c.muted),
-                ),
-              ],
             ],
           ),
         ),

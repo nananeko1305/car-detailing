@@ -45,7 +45,8 @@ author itself.
 Start-up: `main.dart` → `StartGate` (welcome: language, once per phone) →
 `AuthGate` (signed in?) → `ProfileGate` (profile, switched off, or the one-time
 admin claim) → `HomeScreen`. `AuthGate` keys `ProfileGate` by uid, so switching
-accounts resets all state below it.
+accounts resets all state below it; `ProfileGate` keys `HomeScreen` by role,
+so a role changed in the database (there is no in-app way) rebuilds it.
 
 | Path | Holds |
 |---|---|

@@ -13,6 +13,9 @@ class AppLocalizationsSr extends AppLocalizations {
   String get add => 'Dodaj';
 
   @override
+  String get addDiscount => 'Dodaj popust';
+
+  @override
   String get addFromPriceList => 'Dodaj iz cenovnika';
 
   @override
@@ -173,6 +176,16 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get date => 'Datum';
+
+  @override
+  String get deals => 'Pogodnosti';
+
+  @override
+  String get dealsDiscounts => 'Popusti po iznosu porudžbine';
+
+  @override
+  String get dealsHint =>
+      'Važi najveći popust čiji iznos porudžbina prelazi. Novi termini se računaju po ovome; zakazani zadržavaju svoje.';
 
   @override
   String get delete => 'Obriši';
@@ -616,7 +629,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get priceListAdminHint =>
-      'Dodir na stavku je menja, dugi pritisak je sklanja. Dodir na uslove ih menja.';
+      'Dodir na stavku je menja, dugi pritisak je sklanja.';
 
   @override
   String get priceListEmpty => 'Cenovnik je prazan. Postavlja ga admin.';
@@ -777,9 +790,6 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get tabWallet => 'Novčanik';
-
-  @override
-  String get terms => 'Uslovi';
 
   @override
   String toHelpersShort(String amount) {
